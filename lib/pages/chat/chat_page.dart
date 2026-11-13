@@ -25,8 +25,10 @@ class _ChatPageState extends State<ChatPage> {
     const _Message('Did you finish Piranesi yet?', mine: false),
     const _Message('Last night! Still thinking about the ending', mine: true),
     const _Message('No spoilers please. Adding it to my TBR', mine: false),
-    const _Message('You will love it. I put it on my Favorites shelf',
-        mine: true),
+    const _Message(
+      'You will love it. I put it on my Favorites shelf',
+      mine: true,
+    ),
   ];
 
   void _send() {
@@ -54,9 +56,12 @@ class _ChatPageState extends State<ChatPage> {
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                 children: [
                   Center(
-                    child: Text('Today',
-                        style: ChapterText.labelMedium
-                            .copyWith(color: ChapterColors.onSurfaceVariant)),
+                    child: Text(
+                      'Today',
+                      style: ChapterText.labelMedium.copyWith(
+                        color: ChapterColors.onSurfaceVariant,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   for (final m in _messages)
@@ -71,7 +76,9 @@ class _ChatPageState extends State<ChatPage> {
                             maxWidth: MediaQuery.of(context).size.width * 0.78,
                           ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: m.mine
                                 ? ChapterColors.primary
@@ -107,8 +114,9 @@ class _ChatPageState extends State<ChatPage> {
                       child: TextField(
                         controller: _controller,
                         onSubmitted: (_) => _send(),
-                        style: ChapterText.bodyLarge
-                            .copyWith(color: ChapterColors.onSurface),
+                        style: ChapterText.bodyLarge.copyWith(
+                          color: ChapterColors.onSurface,
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Message',
                           hintStyle: ChapterText.bodyLarge,
@@ -126,8 +134,11 @@ class _ChatPageState extends State<ChatPage> {
                       onTap: _send,
                       child: Padding(
                         padding: const EdgeInsets.all(14),
-                        child: SvgPicture.asset('assets/icons/send.svg',
-                            width: 22, height: 22),
+                        child: SvgPicture.asset(
+                          'assets/icons/send.svg',
+                          width: 22,
+                          height: 22,
+                        ),
                       ),
                     ),
                   ),

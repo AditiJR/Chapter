@@ -41,8 +41,10 @@ class _UserRowState extends State<UserRow> {
             GestureDetector(
               onTap: () => setState(() => _following = !_following),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 7,
+                ),
                 decoration: BoxDecoration(
                   color: _following
                       ? ChapterColors.secondaryContainer

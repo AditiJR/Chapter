@@ -49,8 +49,9 @@ class _PushBannerState extends State<_PushBanner> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => setState(() => _visible = true));
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => setState(() => _visible = true),
+    );
     _timer = Timer(const Duration(seconds: 4), _dismiss);
   }
 
@@ -101,8 +102,11 @@ class _PushBannerState extends State<_PushBanner> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Center(
-                      child: SvgPicture.asset('assets/icons/book_open_push.svg',
-                          width: 22, height: 22),
+                      child: SvgPicture.asset(
+                        'assets/icons/book_open_push.svg',
+                        width: 22,
+                        height: 22,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -116,19 +120,24 @@ class _PushBannerState extends State<_PushBanner> {
                               child: Text(
                                 'Chapter · ${widget.sender}',
                                 style: ChapterText.labelMedium.copyWith(
-                                    color: ChapterColors.onSurfaceVariant),
+                                  color: ChapterColors.onSurfaceVariant,
+                                ),
                               ),
                             ),
-                            Text('now',
-                                style: ChapterText.labelSmall.copyWith(
-                                    color: ChapterColors.onSurfaceVariant)),
+                            Text(
+                              'now',
+                              style: ChapterText.labelSmall.copyWith(
+                                color: ChapterColors.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 2),
                         Text(
                           widget.message,
-                          style: ChapterText.bodyMedium
-                              .copyWith(color: ChapterColors.onSurface),
+                          style: ChapterText.bodyMedium.copyWith(
+                            color: ChapterColors.onSurface,
+                          ),
                         ),
                       ],
                     ),

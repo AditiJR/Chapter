@@ -21,8 +21,10 @@ class ScanPage extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
                     _RoundButton(
@@ -33,8 +35,9 @@ class ScanPage extends StatelessWidget {
                       child: Text(
                         'Scan a book',
                         textAlign: TextAlign.center,
-                        style: ChapterText.titleLarge
-                            .copyWith(color: ChapterColors.onPrimary),
+                        style: ChapterText.titleLarge.copyWith(
+                          color: ChapterColors.onPrimary,
+                        ),
                       ),
                     ),
                     const _RoundButton(icon: 'assets/icons/zap.svg'),
@@ -61,8 +64,9 @@ class ScanPage extends StatelessWidget {
                           child: Text(
                             'Point the camera at the barcode on the back cover',
                             textAlign: TextAlign.center,
-                            style: ChapterText.bodyLarge
-                                .copyWith(color: ChapterColors.onPrimary),
+                            style: ChapterText.bodyLarge.copyWith(
+                              color: ChapterColors.onPrimary,
+                            ),
                           ),
                         ),
                       ),
@@ -75,17 +79,23 @@ class ScanPage extends StatelessWidget {
                           onTap: () => context.go(MyNavigatorRoute.search.path),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 18, vertical: 10),
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SvgPicture.asset('assets/icons/search_light.svg',
-                                    width: 18, height: 18),
+                                SvgPicture.asset(
+                                  'assets/icons/search_light.svg',
+                                  width: 18,
+                                  height: 18,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Enter title or ISBN instead',
-                                  style: ChapterText.labelLarge
-                                      .copyWith(color: ChapterColors.onPrimary),
+                                  style: ChapterText.labelLarge.copyWith(
+                                    color: ChapterColors.onPrimary,
+                                  ),
                                 ),
                               ],
                             ),
@@ -131,13 +141,13 @@ class _Viewfinder extends StatelessWidget {
   const _Viewfinder();
 
   Widget _corner() => Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          border: Border.all(color: ChapterColors.onPrimary, width: 4),
-          borderRadius: BorderRadius.circular(14),
-        ),
-      );
+    width: 44,
+    height: 44,
+    decoration: BoxDecoration(
+      border: Border.all(color: ChapterColors.onPrimary, width: 4),
+      borderRadius: BorderRadius.circular(14),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {

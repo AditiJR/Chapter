@@ -31,10 +31,7 @@ Future<T?> showChapterSheet<T>(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const _DragHandle(),
-              builder(context),
-            ],
+            children: [const _DragHandle(), builder(context)],
           ),
         ),
       ),

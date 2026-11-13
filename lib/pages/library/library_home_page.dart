@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../blocs/authentication/authentication_bloc.dart';
 
 import '../../navigation/my_navigator_route.dart';
 
@@ -56,10 +59,14 @@ class _LibraryHomePageState extends State<LibraryHomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Good evening, Aditi',
-                              style: ChapterText.bodyMedium),
-                          Text('Your library',
-                              style: ChapterText.headlineMedium),
+                          Text(
+                            'Good evening, ${context.read<AuthenticationBloc>().user?.firstName ?? ''}',
+                            style: ChapterText.bodyMedium,
+                          ),
+                          Text(
+                            'Your library',
+                            style: ChapterText.headlineMedium,
+                          ),
                         ],
                       ),
                     ),
@@ -104,7 +111,8 @@ class _LibraryHomePageState extends State<LibraryHomePage> {
                   BookListTile(
                     book: book,
                     onTap: () => context.push(
-                        '/book/${Uri.encodeComponent(book.title)}'),
+                      '/book/${Uri.encodeComponent(book.title)}',
+                    ),
                   ),
               ],
             ),
@@ -122,12 +130,18 @@ class _LibraryHomePageState extends State<LibraryHomePage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SvgPicture.asset('assets/icons/scan_fab.svg',
-                            width: 24, height: 24),
+                        SvgPicture.asset(
+                          'assets/icons/scan_fab.svg',
+                          width: 24,
+                          height: 24,
+                        ),
                         const SizedBox(width: 10),
-                        Text('Scan book',
-                            style: ChapterText.labelLarge.copyWith(
-                                color: ChapterColors.onPrimaryContainer)),
+                        Text(
+                          'Scan book',
+                          style: ChapterText.labelLarge.copyWith(
+                            color: ChapterColors.onPrimaryContainer,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -166,17 +180,23 @@ class _CurrentlyReadingCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('CURRENTLY READING',
-                    style: ChapterText.labelSmall
-                        .copyWith(color: ChapterColors.primary)),
+                Text(
+                  'CURRENTLY READING',
+                  style: ChapterText.labelSmall.copyWith(
+                    color: ChapterColors.primary,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(currentlyReading.title, style: ChapterText.titleLarge),
                 const SizedBox(height: 6),
                 Text(currentlyReading.author, style: ChapterText.bodyMedium),
                 const SizedBox(height: 6),
-                Text('In your library',
-                    style: ChapterText.labelMedium
-                        .copyWith(color: ChapterColors.onSurfaceVariant)),
+                Text(
+                  'In your library',
+                  style: ChapterText.labelMedium.copyWith(
+                    color: ChapterColors.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),

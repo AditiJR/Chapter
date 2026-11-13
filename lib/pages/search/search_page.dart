@@ -46,7 +46,10 @@ class _SearchPageState extends State<SearchPage> {
           b,
     ];
     final seen = <String>{};
-    final unique = [for (final b in results) if (seen.add(b.title)) b];
+    final unique = [
+      for (final b in results)
+        if (seen.add(b.title)) b,
+    ];
 
     return Scaffold(
       body: SafeArea(
@@ -76,41 +79,56 @@ class _SearchPageState extends State<SearchPage> {
                   onTap: () => _openBook(book.title),
                 ),
             ] else ...[
-              Text('Recent searches',
-                  style: ChapterText.titleMedium
-                      .copyWith(color: ChapterColors.onSurfaceVariant)),
+              Text(
+                'Recent searches',
+                style: ChapterText.titleMedium.copyWith(
+                  color: ChapterColors.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 14),
               for (final term in List.of(_recent))
                 InkWell(
                   onTap: () => _search(term),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 12,
+                    ),
                     child: Row(
                       children: [
-                        SvgPicture.asset('assets/icons/search_recent.svg',
-                            width: 20, height: 20),
+                        SvgPicture.asset(
+                          'assets/icons/search_recent.svg',
+                          width: 20,
+                          height: 20,
+                        ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Text(
                             term,
-                            style: ChapterText.bodyLarge
-                                .copyWith(color: ChapterColors.onSurface),
+                            style: ChapterText.bodyLarge.copyWith(
+                              color: ChapterColors.onSurface,
+                            ),
                           ),
                         ),
                         GestureDetector(
                           onTap: () => setState(() => _recent.remove(term)),
-                          child: SvgPicture.asset('assets/icons/x_recent.svg',
-                              width: 18, height: 18),
+                          child: SvgPicture.asset(
+                            'assets/icons/x_recent.svg',
+                            width: 18,
+                            height: 18,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
               const SizedBox(height: 14),
-              Text('Popular with readers',
-                  style: ChapterText.titleMedium
-                      .copyWith(color: ChapterColors.onSurfaceVariant)),
+              Text(
+                'Popular with readers',
+                style: ChapterText.titleMedium.copyWith(
+                  color: ChapterColors.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(height: 14),
               Row(
                 children: [
@@ -157,7 +175,11 @@ class _SearchBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SvgPicture.asset('assets/icons/search_bar.svg', width: 24, height: 24),
+          SvgPicture.asset(
+            'assets/icons/search_bar.svg',
+            width: 24,
+            height: 24,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
@@ -175,8 +197,11 @@ class _SearchBar extends StatelessWidget {
           const SizedBox(width: 12),
           GestureDetector(
             onTap: onScan,
-            child: SvgPicture.asset('assets/icons/scan_bar.svg',
-                width: 24, height: 24),
+            child: SvgPicture.asset(
+              'assets/icons/scan_bar.svg',
+              width: 24,
+              height: 24,
+            ),
           ),
         ],
       ),

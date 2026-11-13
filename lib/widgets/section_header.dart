@@ -25,8 +25,9 @@ class SectionHeader extends StatelessWidget {
             onTap: onAction,
             child: Text(
               action,
-              style: ChapterText.labelLarge
-                  .copyWith(color: ChapterColors.primary),
+              style: ChapterText.labelLarge.copyWith(
+                color: ChapterColors.primary,
+              ),
             ),
           ),
         ],

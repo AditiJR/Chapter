@@ -27,21 +27,29 @@ class ChapterColors {
 }
 
 class ChapterText {
-  static TextStyle lora(double size, double height, FontWeight weight,
-          {Color color = ChapterColors.onSurface}) =>
-      GoogleFonts.lora(
-          fontSize: size,
-          height: height / size,
-          fontWeight: weight,
-          color: color);
+  static TextStyle lora(
+    double size,
+    double height,
+    FontWeight weight, {
+    Color color = ChapterColors.onSurface,
+  }) => GoogleFonts.lora(
+    fontSize: size,
+    height: height / size,
+    fontWeight: weight,
+    color: color,
+  );
 
-  static TextStyle roboto(double size, double height, FontWeight weight,
-          {Color color = ChapterColors.onSurface}) =>
-      GoogleFonts.roboto(
-          fontSize: size,
-          height: height / size,
-          fontWeight: weight,
-          color: color);
+  static TextStyle roboto(
+    double size,
+    double height,
+    FontWeight weight, {
+    Color color = ChapterColors.onSurface,
+  }) => GoogleFonts.roboto(
+    fontSize: size,
+    height: height / size,
+    fontWeight: weight,
+    color: color,
+  );
 
   static TextStyle get headlineMedium =>
       lora(26, 34, FontWeight.w600); // Headline/Medium
@@ -59,25 +67,26 @@ class ChapterText {
 }
 
 ThemeData chapterTheme() {
-  final scheme = ColorScheme.fromSeed(
-    seedColor: ChapterColors.primary,
-    brightness: Brightness.light,
-  ).copyWith(
-    primary: ChapterColors.primary,
-    onPrimary: ChapterColors.onPrimary,
-    primaryContainer: ChapterColors.primaryContainer,
-    onPrimaryContainer: ChapterColors.onPrimaryContainer,
-    secondary: ChapterColors.secondary,
-    secondaryContainer: ChapterColors.secondaryContainer,
-    onSecondaryContainer: ChapterColors.onSecondaryContainer,
-    tertiary: ChapterColors.tertiary,
-    surface: ChapterColors.background,
-    onSurface: ChapterColors.onSurface,
-    onSurfaceVariant: ChapterColors.onSurfaceVariant,
-    outline: ChapterColors.outline,
-    outlineVariant: ChapterColors.outlineVariant,
-    error: ChapterColors.error,
-  );
+  final scheme =
+      ColorScheme.fromSeed(
+        seedColor: ChapterColors.primary,
+        brightness: Brightness.light,
+      ).copyWith(
+        primary: ChapterColors.primary,
+        onPrimary: ChapterColors.onPrimary,
+        primaryContainer: ChapterColors.primaryContainer,
+        onPrimaryContainer: ChapterColors.onPrimaryContainer,
+        secondary: ChapterColors.secondary,
+        secondaryContainer: ChapterColors.secondaryContainer,
+        onSecondaryContainer: ChapterColors.onSecondaryContainer,
+        tertiary: ChapterColors.tertiary,
+        surface: ChapterColors.background,
+        onSurface: ChapterColors.onSurface,
+        onSurfaceVariant: ChapterColors.onSurfaceVariant,
+        outline: ChapterColors.outline,
+        outlineVariant: ChapterColors.outlineVariant,
+        error: ChapterColors.error,
+      );
   return ThemeData(
     useMaterial3: true,
     colorScheme: scheme,

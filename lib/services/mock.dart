@@ -85,8 +85,7 @@ const piranesi = Book(
   status: ReadingStatus.finished,
   year: 2020,
   pages: 272,
-  about:
-      "Piranesi lives in the House, a labyrinth of endless halls and statues. His notebooks record the tides, the birds, and the Other. Until a message appears that should not exist.",
+  about: "Piranesi lives in the House, a labyrinth of endless halls and statues. His notebooks record the tides, the birds, and the Other. Until a message appears that should not exist.",
   tags: ["Literary fantasy", "Mystery", "Read 2025"],
 );
 
@@ -149,26 +148,38 @@ const mockCatalog = [
 ];
 
 /// Finds a catalog book by title, falling back to Piranesi.
-Book findBook(String title) => mockCatalog.firstWhere(
-      (b) => b.title == title,
-      orElse: () => piranesi,
-    );
+Book findBook(String title) =>
+    mockCatalog.firstWhere((b) => b.title == title, orElse: () => piranesi);
 
 const mockMaya = Friend(
-    name: "Maya Chen", handle: "maya", books: 142, tone: AvatarTone.yellow);
+  name: "Maya Chen",
+  handle: "maya",
+  books: 142,
+  tone: AvatarTone.yellow,
+);
 const mockJordan = Friend(
-    name: "Jordan Lee", handle: "jordan", books: 64, tone: AvatarTone.peach);
+  name: "Jordan Lee",
+  handle: "jordan",
+  books: 64,
+  tone: AvatarTone.peach,
+);
 const mockPriya = Friend(
-    name: "Priya Nair", handle: "priya", books: 211, tone: AvatarTone.pink);
+  name: "Priya Nair",
+  handle: "priya",
+  books: 211,
+  tone: AvatarTone.pink,
+);
 const mockSam = Friend(
-    name: "Sam Ortiz", handle: "samreads", books: 96, tone: AvatarTone.yellow);
+  name: "Sam Ortiz",
+  handle: "samreads",
+  books: 96,
+  tone: AvatarTone.yellow,
+);
 
 const mockFriends = [mockMaya, mockJordan, mockPriya, mockSam];
 
-Friend findFriend(String name) => mockFriends.firstWhere(
-      (f) => f.name == name,
-      orElse: () => mockMaya,
-    );
+Friend findFriend(String name) =>
+    mockFriends.firstWhere((f) => f.name == name, orElse: () => mockMaya);
 
 /// Colors of the signed-in user's pinned Top 5 covers.
 const topFiveColors = [

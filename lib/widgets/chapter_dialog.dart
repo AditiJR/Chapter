@@ -72,7 +72,10 @@ class DialogAction extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: filled ? 20 : 16, vertical: 10),
+          padding: EdgeInsets.symmetric(
+            horizontal: filled ? 20 : 16,
+            vertical: 10,
+          ),
           child: Text(
             label,
             style: ChapterText.labelLarge.copyWith(

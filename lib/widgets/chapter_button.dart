@@ -10,11 +10,15 @@ class ChapterButton extends StatelessWidget {
     required this.label,
     this.onPressed,
     this.type = ChapterButtonType.filled,
+    this.loading = false,
   });
 
   final String label;
   final VoidCallback? onPressed;
   final ChapterButtonType type;
+
+  /// Shows a spinner and ignores taps while true.
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +31,8 @@ class ChapterButton extends StatelessWidget {
         color: filled
             ? ChapterColors.primary
             : tonal
-                ? ChapterColors.secondaryContainer
-                : Colors.transparent,
+            ? ChapterColors.secondaryContainer
+            : Colors.transparent,
         shape: StadiumBorder(
           side: filled || tonal
               ? BorderSide.none
@@ -36,18 +40,29 @@ class ChapterButton extends StatelessWidget {
         ),
         child: InkWell(
           customBorder: const StadiumBorder(),
-          onTap: onPressed,
+          onTap: loading ? null : onPressed,
           child: Center(
-            child: Text(
-              label,
-              style: ChapterText.labelLarge.copyWith(
-                color: filled
-                    ? ChapterColors.onPrimary
-                    : tonal
-                        ? ChapterColors.onSecondaryContainer
-                        : ChapterColors.primary,
-              ),
-            ),
+            child: loading
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      color: filled
+                          ? ChapterColors.onPrimary
+                          : ChapterColors.primary,
+                    ),
+                  )
+                : Text(
+                    label,
+                    style: ChapterText.labelLarge.copyWith(
+                      color: filled
+                          ? ChapterColors.onPrimary
+                          : tonal
+                          ? ChapterColors.onSecondaryContainer
+                          : ChapterColors.primary,
+                    ),
+                  ),
           ),
         ),
       ),

@@ -36,8 +36,10 @@ class ChapterTextField extends StatelessWidget {
           enabledBorder: border,
           border: border,
           focusedBorder: border.copyWith(
-            borderSide:
-                const BorderSide(color: ChapterColors.primary, width: 2),
+            borderSide: const BorderSide(
+              color: ChapterColors.primary,
+              width: 2,
+            ),
           ),
         ),
       ),

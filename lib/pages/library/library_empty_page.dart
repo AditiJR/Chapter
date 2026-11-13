@@ -63,30 +63,30 @@ class _EmptyShelfIllustration extends StatelessWidget {
   const _EmptyShelfIllustration();
 
   Widget _plank(double top) => Positioned(
-        left: 30,
-        top: top,
-        child: Container(
-          width: 200,
-          height: 8,
-          decoration: BoxDecoration(
-            color: ChapterColors.outlineVariant,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-      );
+    left: 30,
+    top: top,
+    child: Container(
+      width: 200,
+      height: 8,
+      decoration: BoxDecoration(
+        color: ChapterColors.outlineVariant,
+        borderRadius: BorderRadius.circular(4),
+      ),
+    ),
+  );
 
   Widget _book(double left, double width, Color color) => Positioned(
-        left: left,
-        top: 16,
-        child: Container(
-          width: width,
-          height: 54,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(3),
-          ),
-        ),
-      );
+    left: left,
+    top: 16,
+    child: Container(
+      width: width,
+      height: 54,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(3),
+      ),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {

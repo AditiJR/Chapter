@@ -41,9 +41,7 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 children: [
-                  Center(
-                    child: ChapterAvatar(tone: friend.tone, size: 88),
-                  ),
+                  Center(child: ChapterAvatar(tone: friend.tone, size: 88)),
                   const SizedBox(height: 8),
                   Center(
                     child: Text(friend.name, style: ChapterText.headlineMedium),
@@ -85,7 +83,8 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                           label: 'Message',
                           type: ChapterButtonType.outlined,
                           onPressed: () => context.push(
-                              '/chat/${Uri.encodeComponent(friend.name)}'),
+                            '/chat/${Uri.encodeComponent(friend.name)}',
+                          ),
                         ),
                       ),
                     ],
@@ -117,9 +116,13 @@ class _FriendProfilePageState extends State<FriendProfilePage> {
                   const SizedBox(height: 14),
                   const Row(
                     children: [
-                      Expanded(child: ShelfCard(name: 'Favorites', count: '12 books')),
+                      Expanded(
+                        child: ShelfCard(name: 'Favorites', count: '12 books'),
+                      ),
                       SizedBox(width: 12),
-                      Expanded(child: ShelfCard(name: 'To be read', count: '31 books')),
+                      Expanded(
+                        child: ShelfCard(name: 'To be read', count: '31 books'),
+                      ),
                     ],
                   ),
                 ],

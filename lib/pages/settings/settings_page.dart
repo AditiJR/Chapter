@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../blocs/authentication/authentication_bloc.dart';
 
 import '../../navigation/my_navigator_route.dart';
 import '../../theme/theme.dart';
@@ -22,8 +25,11 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<void> _signOut() async {
     final confirmed = await showChapterDialog<bool>(
       context,
-      icon: SvgPicture.asset('assets/icons/log_out_large.svg',
-          width: 28, height: 28),
+      icon: SvgPicture.asset(
+        'assets/icons/log_out_large.svg',
+        width: 28,
+        height: 28,
+      ),
       title: 'Sign out of Chapter?',
       body: 'Your library stays safe in the cloud. Sign back in anytime.',
       actions: [
@@ -39,12 +45,14 @@ class _SettingsPageState extends State<SettingsPage> {
       ],
     );
     if (confirmed == true && mounted) {
+      context.read<AuthenticationBloc>().add(AuthenticationSignOutEvent());
       context.go(MyNavigatorRoute.signIn.path);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<AuthenticationBloc>().user;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -58,19 +66,16 @@ class _SettingsPageState extends State<SettingsPage> {
                   _Row(
                     icon: 'assets/icons/user_row.svg',
                     label: 'Profile',
-                    value: 'Aditi',
+                    value: user?.firstName ?? '',
                     onTap: () =>
                         context.push(MyNavigatorRoute.editProfile.path),
                   ),
-                  const _Row(
+                  _Row(
                     icon: 'assets/icons/mail_row.svg',
                     label: 'Email',
-                    value: 'a***@gmail.com',
+                    value: _maskEmail(user?.email ?? ''),
                   ),
-                  const _Row(
-                    icon: 'assets/icons/lock.svg',
-                    label: 'Password',
-                  ),
+                  const _Row(icon: 'assets/icons/lock.svg', label: 'Password'),
                   const _GroupTitle('Notifications'),
                   _ToggleRow(
                     icon: 'assets/icons/user_plus_row.svg',
@@ -115,16 +120,24 @@ class _SettingsPageState extends State<SettingsPage> {
                   onTap: _signOut,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SvgPicture.asset('assets/icons/log_out.svg',
-                            width: 22, height: 22),
+                        SvgPicture.asset(
+                          'assets/icons/log_out.svg',
+                          width: 22,
+                          height: 22,
+                        ),
                         const SizedBox(width: 12),
-                        Text('Sign out',
-                            style: ChapterText.labelLarge
-                                .copyWith(color: ChapterColors.error)),
+                        Text(
+                          'Sign out',
+                          style: ChapterText.labelLarge.copyWith(
+                            color: ChapterColors.error,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -138,6 +151,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
+/// "aditi@gmail.com" -> "a***@gmail.com".
+String _maskEmail(String email) {
+  final at = email.indexOf('@');
+  if (at < 1) return email;
+  return '${email[0]}***${email.substring(at)}';
+}
+
 class _GroupTitle extends StatelessWidget {
   const _GroupTitle(this.text);
 
@@ -147,20 +167,16 @@ class _GroupTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 14, 8, 4),
-      child: Text(text,
-          style:
-              ChapterText.labelLarge.copyWith(color: ChapterColors.primary)),
+      child: Text(
+        text,
+        style: ChapterText.labelLarge.copyWith(color: ChapterColors.primary),
+      ),
     );
   }
 }
 
 class _Row extends StatelessWidget {
-  const _Row({
-    required this.icon,
-    required this.label,
-    this.value,
-    this.onTap,
-  });
+  const _Row({required this.icon, required this.label, this.value, this.onTap});
 
   final String icon;
   final String label;
@@ -178,16 +194,22 @@ class _Row extends StatelessWidget {
             SvgPicture.asset(icon, width: 24, height: 24),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(label,
-                  style: ChapterText.bodyLarge
-                      .copyWith(color: ChapterColors.onSurface)),
+              child: Text(
+                label,
+                style: ChapterText.bodyLarge.copyWith(
+                  color: ChapterColors.onSurface,
+                ),
+              ),
             ),
             if (value != null) ...[
               Text(value!, style: ChapterText.bodyMedium),
               const SizedBox(width: 16),
             ],
-            SvgPicture.asset('assets/icons/chevron_right.svg',
-                width: 20, height: 20),
+            SvgPicture.asset(
+              'assets/icons/chevron_right.svg',
+              width: 20,
+              height: 20,
+            ),
           ],
         ),
       ),
@@ -219,9 +241,12 @@ class _ToggleRow extends StatelessWidget {
             SvgPicture.asset(icon, width: 24, height: 24),
             const SizedBox(width: 16),
             Expanded(
-              child: Text(label,
-                  style: ChapterText.bodyLarge
-                      .copyWith(color: ChapterColors.onSurface)),
+              child: Text(
+                label,
+                style: ChapterText.bodyLarge.copyWith(
+                  color: ChapterColors.onSurface,
+                ),
+              ),
             ),
             SvgPicture.asset(
               value

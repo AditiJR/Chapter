@@ -12,8 +12,11 @@ Future<bool> showDeleteShelfDialog(
 }) async {
   final result = await showChapterDialog<bool>(
     context,
-    icon: SvgPicture.asset('assets/icons/trash_large.svg',
-        width: 28, height: 28),
+    icon: SvgPicture.asset(
+      'assets/icons/trash_large.svg',
+      width: 28,
+      height: 28,
+    ),
     title: 'Delete “$shelfName”?',
     body:
         "The $bookCount books stay in your library. Only the shelf is removed. This can't be undone.",

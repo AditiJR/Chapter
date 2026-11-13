@@ -41,9 +41,12 @@ class _NewShelfSheetState extends State<_NewShelfSheet> {
         const SizedBox(height: 14),
         ChapterTextField(label: 'Shelf name', controller: _name),
         const SizedBox(height: 14),
-        Text('Quick ideas',
-            style: ChapterText.labelLarge
-                .copyWith(color: ChapterColors.onSurfaceVariant)),
+        Text(
+          'Quick ideas',
+          style: ChapterText.labelLarge.copyWith(
+            color: ChapterColors.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: 14),
         Wrap(
           spacing: 8,
@@ -56,12 +59,18 @@ class _NewShelfSheetState extends State<_NewShelfSheet> {
           ],
         ),
         const SizedBox(height: 14),
-        Text('Shelf color',
-            style: ChapterText.labelLarge
-                .copyWith(color: ChapterColors.onSurfaceVariant)),
+        Text(
+          'Shelf color',
+          style: ChapterText.labelLarge.copyWith(
+            color: ChapterColors.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: 14),
-        SvgPicture.asset('assets/illustrations/color_swatches.svg',
-            width: 228, height: 36),
+        SvgPicture.asset(
+          'assets/illustrations/color_swatches.svg',
+          width: 228,
+          height: 36,
+        ),
         const SizedBox(height: 14),
         ChapterButton(
           label: 'Create shelf',

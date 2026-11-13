@@ -48,8 +48,10 @@ class _EditTopFivePageState extends State<EditTopFivePage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 children: [
-                  Text('Pick up to 5 books that say the most about your taste.',
-                      style: ChapterText.bodyMedium),
+                  Text(
+                    'Pick up to 5 books that say the most about your taste.',
+                    style: ChapterText.bodyMedium,
+                  ),
                   const SizedBox(height: 10),
                   for (var i = 0; i < _pinned.length; i++)
                     Padding(
@@ -70,9 +72,12 @@ class _EditTopFivePageState extends State<EditTopFivePage> {
                             : () => _add(_candidates.first),
                       ),
                     ),
-                  Text('From your library',
-                      style: ChapterText.titleMedium
-                          .copyWith(color: ChapterColors.onSurfaceVariant)),
+                  Text(
+                    'From your library',
+                    style: ChapterText.titleMedium.copyWith(
+                      color: ChapterColors.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 10),
                   for (final book in _candidates)
                     InkWell(
@@ -82,7 +87,10 @@ class _EditTopFivePageState extends State<EditTopFivePage> {
                         child: Row(
                           children: [
                             BookCover(
-                                color: book.coverColor, width: 40, height: 60),
+                              color: book.coverColor,
+                              width: 40,
+                              height: 60,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(child: _BookText(book: book)),
                             Container(
@@ -90,7 +98,9 @@ class _EditTopFivePageState extends State<EditTopFivePage> {
                               height: 22,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                    color: ChapterColors.outline, width: 2),
+                                  color: ChapterColors.outline,
+                                  width: 2,
+                                ),
                                 borderRadius: BorderRadius.circular(5),
                               ),
                             ),
@@ -125,9 +135,12 @@ class _BookText extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(book.title,
-            style:
-                ChapterText.labelLarge.copyWith(color: ChapterColors.onSurface)),
+        Text(
+          book.title,
+          style: ChapterText.labelLarge.copyWith(
+            color: ChapterColors.onSurface,
+          ),
+        ),
         Text(book.author, style: ChapterText.bodySmall),
       ],
     );
@@ -190,8 +203,11 @@ class _FilledSlot extends StatelessWidget {
           Expanded(child: _BookText(book: book)),
           GestureDetector(
             onTap: onRemove,
-            child: SvgPicture.asset('assets/icons/x_slot.svg',
-                width: 20, height: 20),
+            child: SvgPicture.asset(
+              'assets/icons/x_slot.svg',
+              width: 20,
+              height: 20,
+            ),
           ),
         ],
       ),
@@ -221,7 +237,11 @@ class _EmptySlot extends StatelessWidget {
             _Rank(rank: rank, filled: false),
             const SizedBox(width: 12),
             Expanded(child: Text('Add a book', style: ChapterText.bodyMedium)),
-            SvgPicture.asset('assets/icons/plus_slot.svg', width: 20, height: 20),
+            SvgPicture.asset(
+              'assets/icons/plus_slot.svg',
+              width: 20,
+              height: 20,
+            ),
           ],
         ),
       ),

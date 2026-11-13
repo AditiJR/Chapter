@@ -23,11 +23,31 @@ import '../pages/reset_password/reset_password_page.dart';
 import '../pages/sign_up/sign_up_page.dart';
 import '../pages/sign_in/sign_in_page.dart';
 import '../pages/splash/splash_page.dart';
+import '../blocs/authentication/authentication_bloc.dart';
+import '../utilities/stream_to_listenable.dart';
 import '../widgets/scaffold_with_nav_bar.dart';
 import 'my_navigator_route.dart';
 
-final GoRouter router = GoRouter(
+/// Screens reachable without being signed in.
+final _publicPaths = {
+  MyNavigatorRoute.splash.path,
+  MyNavigatorRoute.onboarding.path,
+  MyNavigatorRoute.signIn.path,
+  MyNavigatorRoute.signUp.path,
+  MyNavigatorRoute.resetPassword.path,
+  MyNavigatorRoute.resetLinkSent.path,
+};
+
+GoRouter buildRouter(AuthenticationBloc authBloc) => GoRouter(
   initialLocation: MyNavigatorRoute.splash.path,
+  refreshListenable: StreamToListenable([authBloc.stream]),
+  redirect: (context, state) {
+    final signedIn = authBloc.isAuthenticated;
+    if (!signedIn && !_publicPaths.contains(state.matchedLocation)) {
+      return MyNavigatorRoute.signIn.path;
+    }
+    return null;
+  },
   routes: [
     GoRoute(
       path: MyNavigatorRoute.splash.path,
@@ -67,9 +87,8 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: MyNavigatorRoute.bookDetails.path,
       name: MyNavigatorRoute.bookDetails.name,
-      builder: (context, state) => BookDetailsPage(
-        title: state.pathParameters['title'] ?? 'Piranesi',
-      ),
+      builder: (context, state) =>
+          BookDetailsPage(title: state.pathParameters['title'] ?? 'Piranesi'),
     ),
     GoRoute(
       path: MyNavigatorRoute.messages.path,
@@ -85,9 +104,8 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: MyNavigatorRoute.friendProfile.path,
       name: MyNavigatorRoute.friendProfile.name,
-      builder: (context, state) => FriendProfilePage(
-        name: state.pathParameters['name'] ?? 'Maya Chen',
-      ),
+      builder: (context, state) =>
+          FriendProfilePage(name: state.pathParameters['name'] ?? 'Maya Chen'),
     ),
     GoRoute(
       path: MyNavigatorRoute.notifications.path,
@@ -118,55 +136,65 @@ final GoRouter router = GoRouter(
       builder: (context, state, navigationShell) =>
           ScaffoldWithNavBar(navigationShell: navigationShell),
       branches: [
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: MyNavigatorRoute.library.path,
-            name: MyNavigatorRoute.library.name,
-            builder: (context, state) => const LibraryHomePage(),
-            routes: [
-              GoRoute(
-                path: MyNavigatorRoute.libraryEmpty.path,
-                name: MyNavigatorRoute.libraryEmpty.name,
-                builder: (context, state) => const LibraryEmptyPage(),
-              ),
-              GoRoute(
-                path: MyNavigatorRoute.shelfDetail.path,
-                name: MyNavigatorRoute.shelfDetail.name,
-                builder: (context, state) => ShelfDetailPage(
-                  shelfName: state.pathParameters['name'] ?? 'Shelf',
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: MyNavigatorRoute.library.path,
+              name: MyNavigatorRoute.library.name,
+              builder: (context, state) => const LibraryHomePage(),
+              routes: [
+                GoRoute(
+                  path: MyNavigatorRoute.libraryEmpty.path,
+                  name: MyNavigatorRoute.libraryEmpty.name,
+                  builder: (context, state) => const LibraryEmptyPage(),
                 ),
-              ),
-            ],
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: MyNavigatorRoute.search.path,
-            name: MyNavigatorRoute.search.name,
-            builder: (context, state) => const SearchPage(),
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: MyNavigatorRoute.scan.path,
-            name: MyNavigatorRoute.scan.name,
-            builder: (context, state) => const ScanPage(),
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: MyNavigatorRoute.friends.path,
-            name: MyNavigatorRoute.friends.name,
-            builder: (context, state) => const FriendsPage(),
-          ),
-        ]),
-        StatefulShellBranch(routes: [
-          GoRoute(
-            path: MyNavigatorRoute.profile.path,
-            name: MyNavigatorRoute.profile.name,
-            builder: (context, state) => const ProfilePage(),
-          ),
-        ]),
+                GoRoute(
+                  path: MyNavigatorRoute.shelfDetail.path,
+                  name: MyNavigatorRoute.shelfDetail.name,
+                  builder: (context, state) => ShelfDetailPage(
+                    shelfName: state.pathParameters['name'] ?? 'Shelf',
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: MyNavigatorRoute.search.path,
+              name: MyNavigatorRoute.search.name,
+              builder: (context, state) => const SearchPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: MyNavigatorRoute.scan.path,
+              name: MyNavigatorRoute.scan.name,
+              builder: (context, state) => const ScanPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: MyNavigatorRoute.friends.path,
+              name: MyNavigatorRoute.friends.name,
+              builder: (context, state) => const FriendsPage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: MyNavigatorRoute.profile.path,
+              name: MyNavigatorRoute.profile.name,
+              builder: (context, state) => const ProfilePage(),
+            ),
+          ],
+        ),
       ],
     ),
   ],

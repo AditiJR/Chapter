@@ -43,15 +43,20 @@ class ScaffoldWithNavBar extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 4),
+                          horizontal: 18,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: i == selected
                               ? ChapterColors.secondaryContainer
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: SvgPicture.asset(_items[i].$2,
-                            width: 24, height: 24),
+                        child: SvgPicture.asset(
+                          _items[i].$2,
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(

@@ -31,8 +31,11 @@ class ChapterTopBar extends StatelessWidget {
             onTap: onBack ?? () => context.pop(),
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: SvgPicture.asset('assets/icons/arrow_left.svg',
-                  width: 24, height: 24),
+              child: SvgPicture.asset(
+                'assets/icons/arrow_left.svg',
+                width: 24,
+                height: 24,
+              ),
             ),
           ),
           const SizedBox(width: 4),
@@ -43,8 +46,11 @@ class ChapterTopBar extends StatelessWidget {
               onTap: onAction,
               child: Padding(
                 padding: const EdgeInsets.all(12),
-                child: SvgPicture.asset('assets/icons/more.svg',
-                    width: 24, height: 24),
+                child: SvgPicture.asset(
+                  'assets/icons/more.svg',
+                  width: 24,
+                  height: 24,
+                ),
               ),
             ),
         ],

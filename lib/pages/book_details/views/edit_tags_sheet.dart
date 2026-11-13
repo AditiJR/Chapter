@@ -52,10 +52,11 @@ class _EditTagsSheetState extends State<_EditTagsSheet> {
   }
 
   Widget _label(String text) => Text(
-        text,
-        style: ChapterText.labelLarge
-            .copyWith(color: ChapterColors.onSurfaceVariant),
-      );
+    text,
+    style: ChapterText.labelLarge.copyWith(
+      color: ChapterColors.onSurfaceVariant,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -90,16 +91,20 @@ class _EditTagsSheetState extends State<_EditTagsSheet> {
           decoration: InputDecoration(
             hintText: 'Add a tag',
             hintStyle: ChapterText.bodyLarge,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 18,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: ChapterColors.outline),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: ChapterColors.primary, width: 2),
+              borderSide: const BorderSide(
+                color: ChapterColors.primary,
+                width: 2,
+              ),
             ),
           ),
         ),

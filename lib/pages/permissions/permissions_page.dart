@@ -28,15 +28,15 @@ class PermissionsPage extends StatelessWidget {
               const _PermissionCard(
                 icon: 'assets/icons/scan_permission.svg',
                 title: 'Camera',
-                body:
-                    "Used only to scan a book's ISBN barcode so it can be added to your shelves instantly.",
+                body: "Used only to scan a book's ISBN barcode so it can be added to your shelves instantly.",
                 action: 'Allow camera',
               ),
               const SizedBox(height: 16),
               const _PermissionCard(
                 icon: 'assets/icons/bell_permission.svg',
                 title: 'Notifications',
-                body: 'Get a nudge when a friend follows you or sends a message.',
+                body:
+                    'Get a nudge when a friend follows you or sends a message.',
                 action: 'Allow notifications',
               ),
               const Spacer(),
@@ -48,9 +48,12 @@ class PermissionsPage extends StatelessWidget {
               Center(
                 child: GestureDetector(
                   onTap: () => context.go(MyNavigatorRoute.library.path),
-                  child: Text('Not now',
-                      style: ChapterText.labelLarge
-                          .copyWith(color: ChapterColors.primary)),
+                  child: Text(
+                    'Not now',
+                    style: ChapterText.labelLarge.copyWith(
+                      color: ChapterColors.primary,
+                    ),
+                  ),
                 ),
               ),
             ],

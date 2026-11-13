@@ -31,14 +31,21 @@ class EditProfilePage extends StatelessWidget {
                       ),
                       child: Text(
                         'A',
-                        style: ChapterText.lora(26, 34, FontWeight.w600,
-                            color: ChapterColors.onPrimaryContainer),
+                        style: ChapterText.lora(
+                          26,
+                          34,
+                          FontWeight.w600,
+                          color: ChapterColors.onPrimaryContainer,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text('Change photo',
-                        style: ChapterText.labelLarge
-                            .copyWith(color: ChapterColors.primary)),
+                    Text(
+                      'Change photo',
+                      style: ChapterText.labelLarge.copyWith(
+                        color: ChapterColors.primary,
+                      ),
+                    ),
                     const SizedBox(height: 14),
                     const ChapterTextField(label: 'Display name'),
                     const SizedBox(height: 14),

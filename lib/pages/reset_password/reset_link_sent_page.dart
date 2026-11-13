@@ -23,13 +23,18 @@ class ResetLinkSentPage extends StatelessWidget {
                   color: ChapterColors.primaryContainer,
                   borderRadius: BorderRadius.circular(60),
                 ),
-                child:
-                    SvgPicture.asset('assets/icons/mail.svg', width: 48, height: 48),
+                child: SvgPicture.asset(
+                  'assets/icons/mail.svg',
+                  width: 48,
+                  height: 48,
+                ),
               ),
               const SizedBox(height: 16),
-              Text('Check your inbox',
-                  textAlign: TextAlign.center,
-                  style: ChapterText.headlineMedium),
+              Text(
+                'Check your inbox',
+                textAlign: TextAlign.center,
+                style: ChapterText.headlineMedium,
+              ),
               const SizedBox(height: 16),
               Text(
                 'We sent a reset link to your email. It expires in 30 minutes.',

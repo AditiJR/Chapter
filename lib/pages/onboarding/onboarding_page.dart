@@ -38,24 +38,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
     _Slide(
       illustration: ScanIllustration(),
       title: 'Scan a barcode.\nDone.',
-      body:
-          "Point your camera at a book's ISBN and Chapter fills in the title, author and cover for you.",
+      body: "Point your camera at a book's ISBN and Chapter fills in the title, author and cover for you.",
       dots: 'assets/illustrations/page_dots_1.svg',
       cta: 'Next',
     ),
     _Slide(
       illustration: ShelvesIllustration(),
       title: 'Shelves that work\nyour way',
-      body:
-          'Create unlimited shelves like “Currently reading”, “2026 favorites” or “DNF” and tag books to find them fast.',
+      body: 'Create unlimited shelves like “Currently reading”, “2026 favorites” or “DNF” and tag books to find them fast.',
       dots: 'assets/illustrations/page_dots_2.svg',
       cta: 'Next',
     ),
     _Slide(
       illustration: FriendsIllustration(),
       title: 'Read together',
-      body:
-          'Follow friends, see what they are shelving and chat about the book you both love.',
+      body: 'Follow friends, see what they are shelving and chat about the book you both love.',
       dots: 'assets/illustrations/page_dots_3.svg',
       cta: 'Get started',
     ),
@@ -95,12 +92,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   child: _isLast
                       ? const SizedBox.shrink()
                       : GestureDetector(
-                          onTap: () =>
-                              context.go(MyNavigatorRoute.signIn.path),
+                          onTap: () => context.go(MyNavigatorRoute.signIn.path),
                           child: Text(
                             'Skip',
-                            style: ChapterText.labelLarge
-                                .copyWith(color: ChapterColors.primary),
+                            style: ChapterText.labelLarge.copyWith(
+                              color: ChapterColors.primary,
+                            ),
                           ),
                         ),
                 ),

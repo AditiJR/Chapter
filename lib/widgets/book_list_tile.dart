@@ -33,23 +33,29 @@ class BookListTile extends StatelessWidget {
                   Text(book.author, style: ChapterText.bodyMedium),
                   const SizedBox(height: 2),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: ChapterColors.secondaryContainer,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       badge ?? book.status.label,
-                      style: ChapterText.labelSmall
-                          .copyWith(color: ChapterColors.onSecondaryContainer),
+                      style: ChapterText.labelSmall.copyWith(
+                        color: ChapterColors.onSecondaryContainer,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            SvgPicture.asset('assets/icons/chevron_right.svg',
-                width: 20, height: 20),
+            SvgPicture.asset(
+              'assets/icons/chevron_right.svg',
+              width: 20,
+              height: 20,
+            ),
           ],
         ),
       ),

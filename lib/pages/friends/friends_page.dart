@@ -36,7 +36,9 @@ class _FriendsPageState extends State<FriendsPage> {
           children: [
             Row(
               children: [
-                Expanded(child: Text('Friends', style: ChapterText.headlineMedium)),
+                Expanded(
+                  child: Text('Friends', style: ChapterText.headlineMedium),
+                ),
                 CircleIconButton(
                   icon: 'assets/icons/message.svg',
                   onTap: () => context.push(MyNavigatorRoute.messages.path),
@@ -53,11 +55,16 @@ class _FriendsPageState extends State<FriendsPage> {
               ),
               child: Row(
                 children: [
-                  SvgPicture.asset('assets/icons/search_find.svg',
-                      width: 22, height: 22),
+                  SvgPicture.asset(
+                    'assets/icons/search_find.svg',
+                    width: 22,
+                    height: 22,
+                  ),
                   const SizedBox(width: 12),
-                  Text('Find readers by name or @handle',
-                      style: ChapterText.bodyMedium),
+                  Text(
+                    'Find readers by name or @handle',
+                    style: ChapterText.bodyMedium,
+                  ),
                 ],
               ),
             ),
@@ -104,10 +111,7 @@ class _FriendsPageState extends State<FriendsPage> {
                 onTap: () => _openProfile(mockPriya),
               ),
               const SizedBox(height: 14),
-              UserRow(
-                friend: mockSam,
-                onTap: () => _openProfile(mockSam),
-              ),
+              UserRow(friend: mockSam, onTap: () => _openProfile(mockSam)),
             ] else
               for (final f in mockFriends)
                 UserRow(friend: f, onTap: () => _openProfile(f)),

@@ -35,8 +35,9 @@ Future<void> showBuySheet(BuildContext context, Book book) {
           child: Text(
             'Chapter may earn a commission from purchases, at no extra cost to you.',
             textAlign: TextAlign.center,
-            style: ChapterText.labelSmall
-                .copyWith(color: ChapterColors.onSurfaceVariant),
+            style: ChapterText.labelSmall.copyWith(
+              color: ChapterColors.onSurfaceVariant,
+            ),
           ),
         ),
       ],
@@ -79,9 +80,12 @@ class _StoreRow extends StatelessWidget {
                   color: color,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(letter,
-                    style: ChapterText.titleMedium
-                        .copyWith(color: ChapterColors.onPrimary)),
+                child: Text(
+                  letter,
+                  style: ChapterText.titleMedium.copyWith(
+                    color: ChapterColors.onPrimary,
+                  ),
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -90,20 +94,28 @@ class _StoreRow extends StatelessWidget {
                   children: [
                     Text(name, style: ChapterText.titleMedium),
                     const SizedBox(height: 2),
-                    Text(caption,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: ChapterText.bodySmall),
+                    Text(
+                      caption,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: ChapterText.bodySmall,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(width: 14),
-              Text(price,
-                  style: ChapterText.titleMedium
-                      .copyWith(color: ChapterColors.primary)),
+              Text(
+                price,
+                style: ChapterText.titleMedium.copyWith(
+                  color: ChapterColors.primary,
+                ),
+              ),
               const SizedBox(width: 14),
-              SvgPicture.asset('assets/icons/external.svg',
-                  width: 18, height: 18),
+              SvgPicture.asset(
+                'assets/icons/external.svg',
+                width: 18,
+                height: 18,
+              ),
             ],
           ),
         ),

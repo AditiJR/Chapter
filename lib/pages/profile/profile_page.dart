@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../blocs/authentication/authentication_bloc.dart';
 
 import '../../navigation/my_navigator_route.dart';
 import '../../services/mock.dart';
@@ -15,6 +18,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = context.read<AuthenticationBloc>().user;
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -22,7 +26,9 @@ class ProfilePage extends StatelessWidget {
           children: [
             Row(
               children: [
-                Expanded(child: Text('Profile', style: ChapterText.headlineMedium)),
+                Expanded(
+                  child: Text('Profile', style: ChapterText.headlineMedium),
+                ),
                 CircleIconButton(
                   icon: 'assets/icons/settings.svg',
                   onTap: () => context.push(MyNavigatorRoute.settings.path),
@@ -40,18 +46,29 @@ class ProfilePage extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Text(
-                  'A',
-                  style: ChapterText.lora(26, 34, FontWeight.w600,
-                      color: ChapterColors.onPrimaryContainer),
+                  user?.initial ?? '?',
+                  style: ChapterText.lora(
+                    26,
+                    34,
+                    FontWeight.w600,
+                    color: ChapterColors.onPrimaryContainer,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 6),
-            Center(child: Text('Aditi', style: ChapterText.headlineMedium)),
+            Center(
+              child: Text(
+                user?.firstName ?? '',
+                style: ChapterText.headlineMedium,
+              ),
+            ),
             const SizedBox(height: 6),
             Center(
-              child: Text('@aditi · reading since Oct 2026',
-                  style: ChapterText.bodyMedium),
+              child: Text(
+                '@aditi · reading since Oct 2026',
+                style: ChapterText.bodyMedium,
+              ),
             ),
             const SizedBox(height: 14),
             const Padding(
@@ -105,20 +122,29 @@ class ProfilePage extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  SvgPicture.asset('assets/icons/crown_banner.svg',
-                      width: 28, height: 28),
+                  SvgPicture.asset(
+                    'assets/icons/crown_banner.svg',
+                    width: 28,
+                    height: 28,
+                  ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Chapter Premium',
-                            style: ChapterText.titleMedium.copyWith(
-                                color: ChapterColors.onTertiaryContainer)),
+                        Text(
+                          'Chapter Premium',
+                          style: ChapterText.titleMedium.copyWith(
+                            color: ChapterColors.onTertiaryContainer,
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text('Custom shelf covers, advanced filters, no ads',
-                            style: ChapterText.bodySmall.copyWith(
-                                color: ChapterColors.onTertiaryContainer)),
+                        Text(
+                          'Custom shelf covers, advanced filters, no ads',
+                          style: ChapterText.bodySmall.copyWith(
+                            color: ChapterColors.onTertiaryContainer,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -131,10 +157,15 @@ class ProfilePage extends StatelessWidget {
                       onTap: () => context.push(MyNavigatorRoute.premium.path),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
-                        child: Text('Upgrade',
-                            style: ChapterText.labelLarge
-                                .copyWith(color: ChapterColors.onPrimary)),
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          'Upgrade',
+                          style: ChapterText.labelLarge.copyWith(
+                            color: ChapterColors.onPrimary,
+                          ),
+                        ),
                       ),
                     ),
                   ),

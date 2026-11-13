@@ -135,13 +135,13 @@ class FriendsIllustration extends StatelessWidget {
   const FriendsIllustration({super.key});
 
   Widget _bubble(String text, Color bg, Color fg) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Text(text, style: ChapterText.bodyMedium.copyWith(color: fg)),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    decoration: BoxDecoration(
+      color: bg,
+      borderRadius: BorderRadius.circular(18),
+    ),
+    child: Text(text, style: ChapterText.bodyMedium.copyWith(color: fg)),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -152,32 +152,47 @@ class FriendsIllustration extends StatelessWidget {
           Positioned(
             left: 95,
             top: 70,
-            child: SvgPicture.asset('assets/illustrations/avatar_1.svg',
-                width: 84, height: 84),
+            child: SvgPicture.asset(
+              'assets/illustrations/avatar_1.svg',
+              width: 84,
+              height: 84,
+            ),
           ),
           Positioned(
             left: 153,
             top: 110,
-            child: SvgPicture.asset('assets/illustrations/avatar_2.svg',
-                width: 84, height: 84),
+            child: SvgPicture.asset(
+              'assets/illustrations/avatar_2.svg',
+              width: 84,
+              height: 84,
+            ),
           ),
           Positioned(
             left: 211,
             top: 70,
-            child: SvgPicture.asset('assets/illustrations/avatar_3.svg',
-                width: 84, height: 84),
+            child: SvgPicture.asset(
+              'assets/illustrations/avatar_3.svg',
+              width: 84,
+              height: 84,
+            ),
           ),
           Positioned(
             left: 60,
             top: 210,
-            child: _bubble('Just finished it. Wow.',
-                ChapterColors.onSecondaryContainer, ChapterColors.onPrimary),
+            child: _bubble(
+              'Just finished it. Wow.',
+              ChapterColors.onSecondaryContainer,
+              ChapterColors.onPrimary,
+            ),
           ),
           Positioned(
             left: 130,
             top: 258,
-            child: _bubble('Adding it to my shelf!', ChapterColors.background,
-                ChapterColors.onSurface),
+            child: _bubble(
+              'Adding it to my shelf!',
+              ChapterColors.background,
+              ChapterColors.onSurface,
+            ),
           ),
         ],
       ),

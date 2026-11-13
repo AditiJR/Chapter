@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../blocs/authentication/authentication_bloc.dart';
 
 import '../../navigation/my_navigator_route.dart';
 import '../../theme/theme.dart';
@@ -27,7 +30,13 @@ class _SplashPageState extends State<SplashPage> {
       Timer(const Duration(milliseconds: 300), () => _setStage(1)),
       Timer(const Duration(milliseconds: 1100), () => _setStage(2)),
       Timer(const Duration(milliseconds: 2600), () {
-        if (mounted) context.go(MyNavigatorRoute.onboarding.path);
+        if (!mounted) return;
+        final signedIn = context.read<AuthenticationBloc>().isAuthenticated;
+        context.go(
+          signedIn
+              ? MyNavigatorRoute.library.path
+              : MyNavigatorRoute.onboarding.path,
+        );
       }),
     ]);
   }
@@ -65,10 +74,16 @@ class _SplashPageState extends State<SplashPage> {
               ),
               child: Center(
                 child: large
-                    ? SvgPicture.asset('assets/icons/logo_book_large.svg',
-                        width: 48, height: 48)
-                    : SvgPicture.asset('assets/icons/logo_book.svg',
-                        width: 28, height: 28),
+                    ? SvgPicture.asset(
+                        'assets/icons/logo_book_large.svg',
+                        width: 48,
+                        height: 48,
+                      )
+                    : SvgPicture.asset(
+                        'assets/icons/logo_book.svg',
+                        width: 28,
+                        height: 28,
+                      ),
               ),
             ),
             const SizedBox(height: 24),
@@ -79,16 +94,21 @@ class _SplashPageState extends State<SplashPage> {
                 children: [
                   Text(
                     'Chapter',
-                    style: ChapterText.lora(44, 52, FontWeight.w700,
-                        color: ChapterColors.onPrimary),
+                    style: ChapterText.lora(
+                      44,
+                      52,
+                      FontWeight.w700,
+                      color: ChapterColors.onPrimary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Opacity(
                     opacity: 0.85,
                     child: Text(
                       'Log every page. Shelf every story.',
-                      style: ChapterText.bodyLarge
-                          .copyWith(color: ChapterColors.onPrimary),
+                      style: ChapterText.bodyLarge.copyWith(
+                        color: ChapterColors.onPrimary,
+                      ),
                     ),
                   ),
                 ],

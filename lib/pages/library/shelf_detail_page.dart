@@ -24,8 +24,10 @@ class _ShelfDetailPageState extends State<ShelfDetailPage> {
   String _filter = 'All';
 
   Future<void> _openMenu() async {
-    final action =
-        await showShelfMenuSheet(context, shelfName: widget.shelfName);
+    final action = await showShelfMenuSheet(
+      context,
+      shelfName: widget.shelfName,
+    );
     if (!mounted || action != ShelfMenuAction.delete) return;
     final confirmed = await showDeleteShelfDialog(
       context,
@@ -69,7 +71,8 @@ class _ShelfDetailPageState extends State<ShelfDetailPage> {
                     BookListTile(
                       book: book,
                       onTap: () => context.push(
-                          '/book/${Uri.encodeComponent(book.title)}'),
+                        '/book/${Uri.encodeComponent(book.title)}',
+                      ),
                     ),
                 ],
               ),

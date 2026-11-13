@@ -37,11 +37,13 @@ class _PremiumPageState extends State<PremiumPage> {
   Future<void> _subscribe() async {
     await showChapterDialog<void>(
       context,
-      icon: SvgPicture.asset('assets/icons/crown_dialog.svg',
-          width: 28, height: 28),
+      icon: SvgPicture.asset(
+        'assets/icons/crown_dialog.svg',
+        width: 28,
+        height: 28,
+      ),
       title: 'Welcome to Premium',
-      body:
-          'Custom covers, advanced filters and an ad-free experience are now unlocked.',
+      body: 'Custom covers, advanced filters and an ad-free experience are now unlocked.',
       actions: [
         DialogAction(
           label: 'Start exploring',
@@ -69,8 +71,11 @@ class _PremiumPageState extends State<PremiumPage> {
                     onTap: () => context.pop(),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: SvgPicture.asset('assets/icons/x_dark.svg',
-                          width: 24, height: 24),
+                      child: SvgPicture.asset(
+                        'assets/icons/x_dark.svg',
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
                   ),
                 ],
@@ -90,8 +95,11 @@ class _PremiumPageState extends State<PremiumPage> {
                         shape: BoxShape.circle,
                       ),
                       child: Center(
-                        child: SvgPicture.asset('assets/icons/crown_hero.svg',
-                            width: 36, height: 36),
+                        child: SvgPicture.asset(
+                          'assets/icons/crown_hero.svg',
+                          width: 36,
+                          height: 36,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -100,8 +108,10 @@ class _PremiumPageState extends State<PremiumPage> {
                       style: ChapterText.lora(34, 42, FontWeight.w700),
                     ),
                     const SizedBox(height: 14),
-                    Text('Make your shelves truly yours.',
-                        style: ChapterText.bodyLarge),
+                    Text(
+                      'Make your shelves truly yours.',
+                      style: ChapterText.bodyLarge,
+                    ),
                     const SizedBox(height: 14),
                     for (final f in _features)
                       Padding(
@@ -115,14 +125,18 @@ class _PremiumPageState extends State<PremiumPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: SvgPicture.asset(
-                                  'assets/icons/check_small.svg',
-                                  width: 16,
-                                  height: 16),
+                                'assets/icons/check_small.svg',
+                                width: 16,
+                                height: 16,
+                              ),
                             ),
                             const SizedBox(width: 12),
-                            Text(f,
-                                style: ChapterText.bodyLarge.copyWith(
-                                    color: ChapterColors.onSurface)),
+                            Text(
+                              f,
+                              style: ChapterText.bodyLarge.copyWith(
+                                color: ChapterColors.onSurface,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -148,9 +162,12 @@ class _PremiumPageState extends State<PremiumPage> {
                     onPressed: _subscribe,
                   ),
                   const SizedBox(height: 14),
-                  Text('Restore purchases',
-                      style: ChapterText.labelLarge
-                          .copyWith(color: ChapterColors.primary)),
+                  Text(
+                    'Restore purchases',
+                    style: ChapterText.labelLarge.copyWith(
+                      color: ChapterColors.primary,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -186,8 +203,9 @@ class _PlanCard extends StatelessWidget {
         ),
       ),
       child: InkWell(
-        customBorder:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         onTap: onTap,
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -202,9 +220,12 @@ class _PlanCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(plan.price,
-                  style: ChapterText.titleMedium
-                      .copyWith(color: ChapterColors.primary)),
+              Text(
+                plan.price,
+                style: ChapterText.titleMedium.copyWith(
+                  color: ChapterColors.primary,
+                ),
+              ),
             ],
           ),
         ),

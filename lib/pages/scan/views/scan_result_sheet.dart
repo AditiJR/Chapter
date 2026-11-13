@@ -43,8 +43,10 @@ class _ScanResultSheetState extends State<_ScanResultSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Book found',
-            style: ChapterText.labelLarge.copyWith(color: ChapterColors.success)),
+        Text(
+          'Book found',
+          style: ChapterText.labelLarge.copyWith(color: ChapterColors.success),
+        ),
         const SizedBox(height: 12),
         Row(
           children: [
@@ -62,25 +64,36 @@ class _ScanResultSheetState extends State<_ScanResultSheet> {
                 children: [
                   Text(piranesi.title, style: ChapterText.titleLarge),
                   const SizedBox(height: 4),
-                  Text('${piranesi.author} · ${piranesi.year}',
-                      style: ChapterText.bodyMedium),
+                  Text(
+                    '${piranesi.author} · ${piranesi.year}',
+                    style: ChapterText.bodyMedium,
+                  ),
                   const SizedBox(height: 4),
-                  Text('ISBN 9781635575637',
-                      style: ChapterText.labelMedium
-                          .copyWith(color: ChapterColors.onSurfaceVariant)),
+                  Text(
+                    'ISBN 9781635575637',
+                    style: ChapterText.labelMedium.copyWith(
+                      color: ChapterColors.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text('Source: Google Books',
-                      style: ChapterText.labelSmall
-                          .copyWith(color: ChapterColors.onSurfaceVariant)),
+                  Text(
+                    'Source: Google Books',
+                    style: ChapterText.labelSmall.copyWith(
+                      color: ChapterColors.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        Text('Add to shelf',
-            style: ChapterText.labelLarge
-                .copyWith(color: ChapterColors.onSurfaceVariant)),
+        Text(
+          'Add to shelf',
+          style: ChapterText.labelLarge.copyWith(
+            color: ChapterColors.onSurfaceVariant,
+          ),
+        ),
         const SizedBox(height: 12),
         Wrap(
           spacing: 8,

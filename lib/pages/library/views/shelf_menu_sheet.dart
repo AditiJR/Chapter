@@ -34,9 +34,12 @@ Future<ShelfMenuAction?> showShelfMenuSheet(
               color: ChapterColors.tertiaryContainer,
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text('Premium',
-                style: ChapterText.labelSmall
-                    .copyWith(color: ChapterColors.onTertiaryContainer)),
+            child: Text(
+              'Premium',
+              style: ChapterText.labelSmall.copyWith(
+                color: ChapterColors.onTertiaryContainer,
+              ),
+            ),
           ),
           onTap: () => Navigator.of(context).pop(ShelfMenuAction.changeCover),
         ),

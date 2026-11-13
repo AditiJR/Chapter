@@ -12,10 +12,34 @@ class MessagesPage extends StatelessWidget {
   const MessagesPage({super.key});
 
   static final _threads = [
-    (friend: mockMaya, preview: 'Did you finish Piranesi yet?', time: '2m', unread: 2, tone: AvatarTone.yellow),
-    (friend: mockJordan, preview: 'Adding Klara to my TBR!', time: '1h', unread: 0, tone: AvatarTone.peach),
-    (friend: mockPriya, preview: 'That ending though', time: 'Tue', unread: 0, tone: AvatarTone.pink),
-    (friend: mockSam, preview: 'Thanks for the rec', time: 'Mon', unread: 0, tone: AvatarTone.yellow),
+    (
+      friend: mockMaya,
+      preview: 'Did you finish Piranesi yet?',
+      time: '2m',
+      unread: 2,
+      tone: AvatarTone.yellow,
+    ),
+    (
+      friend: mockJordan,
+      preview: 'Adding Klara to my TBR!',
+      time: '1h',
+      unread: 0,
+      tone: AvatarTone.peach,
+    ),
+    (
+      friend: mockPriya,
+      preview: 'That ending though',
+      time: 'Tue',
+      unread: 0,
+      tone: AvatarTone.pink,
+    ),
+    (
+      friend: mockSam,
+      preview: 'Thanks for the rec',
+      time: 'Mon',
+      unread: 0,
+      tone: AvatarTone.yellow,
+    ),
   ];
 
   @override
@@ -34,10 +58,13 @@ class MessagesPage extends StatelessWidget {
                       for (final t in _threads)
                         InkWell(
                           onTap: () => context.push(
-                              '/chat/${Uri.encodeComponent(t.friend.name)}'),
+                            '/chat/${Uri.encodeComponent(t.friend.name)}',
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 4, vertical: 12),
+                              horizontal: 4,
+                              vertical: 12,
+                            ),
                             child: Row(
                               children: [
                                 ChapterAvatar(tone: t.tone, size: 52),
@@ -47,10 +74,12 @@ class MessagesPage extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(t.friend.name,
-                                          style: t.unread > 0
-                                              ? ChapterText.titleMedium
-                                              : ChapterText.titleMedium),
+                                      Text(
+                                        t.friend.name,
+                                        style: t.unread > 0
+                                            ? ChapterText.titleMedium
+                                            : ChapterText.titleMedium,
+                                      ),
                                       const SizedBox(height: 2),
                                       Text(
                                         t.preview,
@@ -66,25 +95,32 @@ class MessagesPage extends StatelessWidget {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text(t.time,
-                                        style: ChapterText.labelSmall.copyWith(
-                                            color: ChapterColors
-                                                .onSurfaceVariant)),
+                                    Text(
+                                      t.time,
+                                      style: ChapterText.labelSmall.copyWith(
+                                        color: ChapterColors.onSurfaceVariant,
+                                      ),
+                                    ),
                                     if (t.unread > 0) ...[
                                       const SizedBox(height: 6),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 7, vertical: 2),
+                                          horizontal: 7,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: ChapterColors.primary,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
-                                        child: Text('${t.unread}',
-                                            style: ChapterText.labelSmall
-                                                .copyWith(
-                                                    color: ChapterColors
-                                                        .onPrimary)),
+                                        child: Text(
+                                          '${t.unread}',
+                                          style: ChapterText.labelSmall
+                                              .copyWith(
+                                                color: ChapterColors.onPrimary,
+                                              ),
+                                        ),
                                       ),
                                     ],
                                   ],
@@ -112,12 +148,18 @@ class MessagesPage extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        SvgPicture.asset('assets/icons/pencil_small.svg',
-                            width: 22, height: 22),
+                        SvgPicture.asset(
+                          'assets/icons/pencil_small.svg',
+                          width: 22,
+                          height: 22,
+                        ),
                         const SizedBox(width: 10),
-                        Text('New message',
-                            style: ChapterText.labelLarge.copyWith(
-                                color: ChapterColors.onPrimaryContainer)),
+                        Text(
+                          'New message',
+                          style: ChapterText.labelLarge.copyWith(
+                            color: ChapterColors.onPrimaryContainer,
+                          ),
+                        ),
                       ],
                     ),
                   ),

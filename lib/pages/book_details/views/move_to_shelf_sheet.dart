@@ -56,13 +56,17 @@ class _MoveToShelfSheetState extends State<_MoveToShelfSheet> {
                   Expanded(
                     child: Text(
                       status.label,
-                      style: ChapterText.bodyLarge
-                          .copyWith(color: ChapterColors.onSurface),
+                      style: ChapterText.bodyLarge.copyWith(
+                        color: ChapterColors.onSurface,
+                      ),
                     ),
                   ),
                   if (status == _selected)
-                    SvgPicture.asset('assets/icons/check.svg',
-                        width: 22, height: 22),
+                    SvgPicture.asset(
+                      'assets/icons/check.svg',
+                      width: 22,
+                      height: 22,
+                    ),
                 ],
               ),
             ),
@@ -73,11 +77,18 @@ class _MoveToShelfSheetState extends State<_MoveToShelfSheet> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
             child: Row(
               children: [
-                SvgPicture.asset('assets/icons/plus.svg', width: 22, height: 22),
+                SvgPicture.asset(
+                  'assets/icons/plus.svg',
+                  width: 22,
+                  height: 22,
+                ),
                 const SizedBox(width: 16),
-                Text('New shelf',
-                    style: ChapterText.bodyLarge
-                        .copyWith(color: ChapterColors.primary)),
+                Text(
+                  'New shelf',
+                  style: ChapterText.bodyLarge.copyWith(
+                    color: ChapterColors.primary,
+                  ),
+                ),
               ],
             ),
           ),

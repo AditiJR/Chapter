@@ -47,12 +47,14 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
           backgroundColor: ChapterColors.onSurface,
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 24),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           content: Text(
             'Pinned to your Top 5',
-            style: ChapterText.bodyMedium
-                .copyWith(color: ChapterColors.background),
+            style: ChapterText.bodyMedium.copyWith(
+              color: ChapterColors.background,
+            ),
           ),
           action: SnackBarAction(
             label: 'View',
@@ -66,8 +68,11 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
   Future<void> _remove() async {
     final confirmed = await showChapterDialog<bool>(
       context,
-      icon: SvgPicture.asset('assets/icons/trash_large.svg',
-          width: 28, height: 28),
+      icon: SvgPicture.asset(
+        'assets/icons/trash_large.svg',
+        width: 28,
+        height: 28,
+      ),
       title: 'Remove “${_book.title}”?',
       body: 'It will be removed from all your shelves and your top 5.',
       actions: [
@@ -101,15 +106,21 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                     onTap: () => context.pop(),
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: SvgPicture.asset('assets/icons/arrow_left.svg',
-                          width: 24, height: 24),
+                      child: SvgPicture.asset(
+                        'assets/icons/arrow_left.svg',
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
                   ),
                   const Spacer(),
                   Padding(
                     padding: const EdgeInsets.all(12),
-                    child: SvgPicture.asset('assets/icons/more.svg',
-                        width: 24, height: 24),
+                    child: SvgPicture.asset(
+                      'assets/icons/more.svg',
+                      width: 24,
+                      height: 24,
+                    ),
                   ),
                   const SizedBox(width: 8),
                 ],
@@ -190,8 +201,9 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                   Text(
                     'Opens Bookshop.org or Amazon. Chapter may earn a commission.',
                     textAlign: TextAlign.center,
-                    style: ChapterText.labelSmall
-                        .copyWith(color: ChapterColors.onSurfaceVariant),
+                    style: ChapterText.labelSmall.copyWith(
+                      color: ChapterColors.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

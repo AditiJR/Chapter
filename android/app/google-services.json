@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "190841507622",
+    "project_id": "chapter-268",
+    "storage_bucket": "chapter-268.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190841507622:android:9f8daa9a6aad98e9037be7",
+        "android_client_info": {
+          "package_name": "edu.scu.chapter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoJKzgH4faPWBW6ln3tCcovE5fcU30D24"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

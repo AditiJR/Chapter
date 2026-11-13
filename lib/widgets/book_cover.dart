@@ -40,8 +40,12 @@ class BookCover extends StatelessWidget {
                 children: [
                   Text(
                     title!,
-                    style: ChapterText.lora(13, 16, FontWeight.w700,
-                        color: ChapterColors.onPrimary),
+                    style: ChapterText.lora(
+                      13,
+                      16,
+                      FontWeight.w700,
+                      color: ChapterColors.onPrimary,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   if (author != null)
@@ -49,8 +53,12 @@ class BookCover extends StatelessWidget {
                       opacity: 0.85,
                       child: Text(
                         author!,
-                        style: ChapterText.roboto(9, 12, FontWeight.w400,
-                            color: ChapterColors.onPrimary),
+                        style: ChapterText.roboto(
+                          9,
+                          12,
+                          FontWeight.w400,
+                          color: ChapterColors.onPrimary,
+                        ),
                       ),
                     ),
                 ],

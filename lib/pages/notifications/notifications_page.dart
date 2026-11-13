@@ -65,11 +65,14 @@ class NotificationsPage extends StatelessWidget {
   }
 
   Widget _heading(String text) => Padding(
-        padding: const EdgeInsets.only(top: 2, bottom: 2),
-        child: Text(text,
-            style: ChapterText.labelLarge
-                .copyWith(color: ChapterColors.onSurfaceVariant)),
-      );
+    padding: const EdgeInsets.only(top: 2, bottom: 2),
+    child: Text(
+      text,
+      style: ChapterText.labelLarge.copyWith(
+        color: ChapterColors.onSurfaceVariant,
+      ),
+    ),
+  );
 }
 
 class _Item extends StatelessWidget {
@@ -116,9 +119,12 @@ class _Item extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Text(time,
-                style: ChapterText.labelSmall
-                    .copyWith(color: ChapterColors.onSurfaceVariant)),
+            Text(
+              time,
+              style: ChapterText.labelSmall.copyWith(
+                color: ChapterColors.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),
