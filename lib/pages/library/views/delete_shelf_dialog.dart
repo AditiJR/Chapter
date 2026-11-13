@@ -19,7 +19,7 @@ Future<bool> showDeleteShelfDialog(
     ),
     title: 'Delete “$shelfName”?',
     body:
-        "The $bookCount books stay in your library. Only the shelf is removed. This can't be undone.",
+        "${bookCount == 1 ? 'The 1 book stays' : 'The $bookCount books stay'} in your library. Only the shelf is removed. This can't be undone.",
     actions: [
       DialogAction(
         label: 'Cancel',

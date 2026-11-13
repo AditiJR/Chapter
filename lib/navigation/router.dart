@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../model/book.dart';
 import '../pages/book_details/book_details_page.dart';
 import '../pages/chat/chat_page.dart';
 import '../pages/edit_profile/edit_profile_page.dart';
@@ -87,8 +88,10 @@ GoRouter buildRouter(AuthenticationBloc authBloc) => GoRouter(
     GoRoute(
       path: MyNavigatorRoute.bookDetails.path,
       name: MyNavigatorRoute.bookDetails.name,
-      builder: (context, state) =>
-          BookDetailsPage(title: state.pathParameters['title'] ?? 'Piranesi'),
+      builder: (context, state) => BookDetailsPage(
+        title: state.pathParameters['title'] ?? 'Piranesi',
+        book: state.extra as Book?,
+      ),
     ),
     GoRoute(
       path: MyNavigatorRoute.messages.path,
@@ -152,7 +155,7 @@ GoRouter buildRouter(AuthenticationBloc authBloc) => GoRouter(
                   path: MyNavigatorRoute.shelfDetail.path,
                   name: MyNavigatorRoute.shelfDetail.name,
                   builder: (context, state) => ShelfDetailPage(
-                    shelfName: state.pathParameters['name'] ?? 'Shelf',
+                    shelfId: state.pathParameters['id'] ?? '',
                   ),
                 ),
               ],

@@ -1,14 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../navigation/my_navigator_route.dart';
+import '../../repositories/books/books_repository.dart';
 import '../../theme/theme.dart';
 import 'views/scan_result_sheet.dart';
 
-class ScanPage extends StatelessWidget {
+class ScanPage extends StatefulWidget {
   const ScanPage({super.key});
+
+  @override
+  State<ScanPage> createState() => _ScanPageState();
+}
+
+class _ScanPageState extends State<ScanPage> {
+  /// ISBN the demo viewfinder "scans" until the camera scanner is wired in.
+  static const _demoIsbn = '9781635575637';
+
+  bool _loading = false;
+
+  Future<void> _scan() async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final book = await context.read<BooksRepository>().findByIsbn(_demoIsbn);
+      if (!mounted) return;
+      if (book == null) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('No book found for that barcode.')),
+        );
+      } else {
+        await showScanResultSheet(context, book);
+      }
+    } on BooksException catch (e) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(e.message)));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +88,8 @@ class ScanPage extends StatelessWidget {
                     children: [
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => showScanResultSheet(context),
-                        child: const _Viewfinder(),
+                        onTap: _scan,
+                        child: _Viewfinder(loading: _loading),
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
@@ -138,7 +173,9 @@ class _RoundButton extends StatelessWidget {
 }
 
 class _Viewfinder extends StatelessWidget {
-  const _Viewfinder();
+  const _Viewfinder({this.loading = false});
+
+  final bool loading;
 
   Widget _corner() => Container(
     width: 44,
@@ -172,6 +209,10 @@ class _Viewfinder extends StatelessWidget {
               ),
             ),
           ),
+          if (loading)
+            const Center(
+              child: CircularProgressIndicator(color: ChapterColors.onPrimary),
+            ),
         ],
       ),
     );

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../blocs/authentication/authentication_bloc.dart';
 
 import '../../navigation/my_navigator_route.dart';
 import '../../theme/theme.dart';
@@ -21,7 +24,10 @@ class LibraryEmptyPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Welcome, Aditi', style: ChapterText.bodyMedium),
+                    Text(
+                      'Welcome, ${context.read<AuthenticationBloc>().user?.firstName ?? ''}',
+                      style: ChapterText.bodyMedium,
+                    ),
                     Text('Your library', style: ChapterText.headlineMedium),
                   ],
                 ),

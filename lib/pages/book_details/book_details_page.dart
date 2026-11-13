@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../model/book.dart';
-import '../../services/mock.dart';
+import '../../blocs/library/library_cubit.dart';
+import '../../navigation/my_navigator_route.dart';
+import '../../repositories/library/library_repository.dart';
+import '../../utilities/guarded.dart';
+import '../../widgets/chapter_top_bar.dart';
 import '../../theme/theme.dart';
 import '../../widgets/book_actions.dart';
 import '../../widgets/book_cover.dart';
@@ -15,30 +20,30 @@ import 'views/edit_tags_sheet.dart';
 import 'views/move_to_shelf_sheet.dart';
 
 class BookDetailsPage extends StatefulWidget {
-  const BookDetailsPage({super.key, required this.title});
+  const BookDetailsPage({super.key, required this.title, this.book});
 
   final String title;
+
+  /// The book to show. For books that are already saved, the live library
+  /// copy (shelf, tags, ...) takes precedence.
+  final Book? book;
 
   @override
   State<BookDetailsPage> createState() => _BookDetailsPageState();
 }
 
 class _BookDetailsPageState extends State<BookDetailsPage> {
-  late final Book _book = findBook(widget.title);
-  late List<String> _tags = _book.tags;
-  late ReadingStatus _shelf = _book.status;
-
-  Future<void> _moveToShelf() async {
-    final result = await showMoveToShelfSheet(context, current: _shelf);
-    if (result != null && mounted) setState(() => _shelf = result);
+  /// The saved copy if the book is in the library, else the one we were given.
+  Book _currentBook(LibraryState state) {
+    final given = widget.book!;
+    if (state is LibraryLoaded) {
+      final saved = state.bookById(FirestoreLibraryRepository.bookDocId(given));
+      if (saved != null) return saved;
+    }
+    return given;
   }
 
-  Future<void> _editTags() async {
-    final result = await showEditTagsSheet(context, tags: _tags);
-    if (result != null && mounted) setState(() => _tags = result);
-  }
-
-  void _pin() {
+  void _toast(String message, {SnackBarAction? action}) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -51,21 +56,70 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
             borderRadius: BorderRadius.circular(12),
           ),
           content: Text(
-            'Pinned to your Top 5',
+            message,
             style: ChapterText.bodyMedium.copyWith(
               color: ChapterColors.background,
             ),
           ),
-          action: SnackBarAction(
-            label: 'View',
-            textColor: ChapterColors.primaryContainer,
-            onPressed: () {},
-          ),
+          action: action,
         ),
       );
   }
 
-  Future<void> _remove() async {
+  Future<void> _moveToShelf(Book book) async {
+    final cubit = context.read<LibraryCubit>();
+    final shelfId = await showMoveToShelfSheet(
+      context,
+      currentShelfId: book.shelfId,
+    );
+    if (shelfId == null || !mounted) return;
+    await guarded(context, () => cubit.moveBook(book, shelfId));
+    if (!mounted) return;
+    final state = cubit.state;
+    final name = state is LibraryLoaded ? state.shelfName(shelfId) : 'shelf';
+    _toast(book.isInLibrary ? 'Moved to $name' : 'Added to $name');
+  }
+
+  Future<void> _editTags(Book book) async {
+    if (!book.isInLibrary) {
+      _toast('Add this book to a shelf first.');
+      return;
+    }
+    final cubit = context.read<LibraryCubit>();
+    final tags = await showEditTagsSheet(context, tags: book.tags);
+    if (tags == null || !mounted) return;
+    await guarded(context, () => cubit.setTags(book, tags));
+  }
+
+  Future<void> _pin(Book book) async {
+    if (!book.isInLibrary) {
+      _toast('Add this book to a shelf first.');
+      return;
+    }
+    final cubit = context.read<LibraryCubit>();
+    var pinned = false;
+    await guarded(context, () async => pinned = await cubit.pinToTopFive(book));
+    if (!mounted) return;
+    if (pinned) {
+      _toast(
+        'Pinned to your Top 5',
+        action: SnackBarAction(
+          label: 'View',
+          textColor: ChapterColors.primaryContainer,
+          onPressed: () => context.go(MyNavigatorRoute.profile.path),
+        ),
+      );
+    } else {
+      _toast('Your Top 5 is full. Remove one first.');
+    }
+  }
+
+  Future<void> _remove(Book book) async {
+    if (!book.isInLibrary) {
+      _toast("This book isn't in your library.");
+      return;
+    }
+    final cubit = context.read<LibraryCubit>();
     final confirmed = await showChapterDialog<bool>(
       context,
       icon: SvgPicture.asset(
@@ -73,7 +127,7 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
         width: 28,
         height: 28,
       ),
-      title: 'Remove “${_book.title}”?',
+      title: 'Remove “${book.title}”?',
       body: 'It will be removed from all your shelves and your top 5.',
       actions: [
         DialogAction(
@@ -87,11 +141,31 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
         ),
       ],
     );
-    if (confirmed == true && mounted) context.pop();
+    if (confirmed != true || !mounted) return;
+    context.pop();
+    await cubit.removeBook(book);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.book == null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              const ChapterTopBar(title: 'Book'),
+              Expanded(
+                child: Center(
+                  child: Text('Book not found.', style: ChapterText.bodyLarge),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    final state = context.watch<LibraryCubit>().state;
+    final book = _currentBook(state);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -134,9 +208,9 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                   children: [
                     Center(
                       child: BookCover(
-                        color: _book.coverColor,
-                        title: _book.title,
-                        author: _book.author,
+                        color: book.coverColor,
+                        title: book.title,
+                        author: book.author,
                         width: 132,
                         height: 198,
                       ),
@@ -145,7 +219,7 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                     SizedBox(
                       width: double.infinity,
                       child: Text(
-                        _book.title,
+                        book.title,
                         textAlign: TextAlign.center,
                         style: ChapterText.headlineMedium,
                       ),
@@ -155,8 +229,8 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                       width: double.infinity,
                       child: Text(
                         [
-                          _book.author,
-                          if (_book.pages != null) '${_book.pages} pages',
+                          book.author,
+                          if (book.pages != null) '${book.pages} pages',
                         ].join(' · '),
                         textAlign: TextAlign.center,
                         style: ChapterText.bodyMedium,
@@ -164,25 +238,25 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                     ),
                     const SizedBox(height: 14),
                     BookActions(
-                      onShelf: _moveToShelf,
-                      onTags: _editTags,
-                      onPin: _pin,
-                      onRemove: _remove,
+                      onShelf: () => _moveToShelf(book),
+                      onTags: () => _editTags(book),
+                      onPin: () => _pin(book),
+                      onRemove: () => _remove(book),
                     ),
                     const SizedBox(height: 14),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        for (final tag in _tags)
+                        for (final tag in book.tags)
                           ChapterChip(label: tag, selected: true),
                       ],
                     ),
-                    if (_book.about != null) ...[
+                    if (book.about != null) ...[
                       const SizedBox(height: 14),
                       Text('About', style: ChapterText.titleLarge),
                       const SizedBox(height: 14),
-                      Text(_book.about!, style: ChapterText.bodyMedium),
+                      Text(book.about!, style: ChapterText.bodyMedium),
                     ],
                     const SizedBox(height: 14),
                   ],
@@ -195,7 +269,7 @@ class _BookDetailsPageState extends State<BookDetailsPage> {
                 children: [
                   ChapterButton(
                     label: 'Buy this book',
-                    onPressed: () => showBuySheet(context, _book),
+                    onPressed: () => showBuySheet(context, book),
                   ),
                   const SizedBox(height: 14),
                   Text(

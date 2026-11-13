@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../model/book.dart';
-import '../../services/mock.dart';
+import '../../blocs/library/library_cubit.dart';
+import '../../utilities/guarded.dart';
 import '../../theme/theme.dart';
 import '../../widgets/book_cover.dart';
 import '../../widgets/chapter_button.dart';
@@ -19,8 +21,30 @@ class EditTopFivePage extends StatefulWidget {
 class _EditTopFivePageState extends State<EditTopFivePage> {
   static const _maxBooks = 5;
 
-  final _pinned = [...mockTopFive];
-  final _candidates = [...mockTopFiveCandidates];
+  /// Working copy of the Top 5, edited locally and saved with the button.
+  late final List<Book> _pinned = _initialPinned();
+  late final List<Book> _candidates = _initialCandidates();
+
+  List<Book> _initialPinned() {
+    final state = context.read<LibraryCubit>().state;
+    return state is LibraryLoaded ? [...state.topFive] : [];
+  }
+
+  List<Book> _initialCandidates() {
+    final state = context.read<LibraryCubit>().state;
+    if (state is! LibraryLoaded) return [];
+    return [
+      for (final b in state.books)
+        if (b.topFiveRank == null) b,
+    ];
+  }
+
+  Future<void> _save() async {
+    final cubit = context.read<LibraryCubit>();
+    final ids = [for (final b in _pinned) b.id!];
+    await guarded(context, () => cubit.setTopFive(ids));
+    if (mounted) context.pop();
+  }
 
   void _add(Book book) {
     if (_pinned.length >= _maxBooks) return;
@@ -113,10 +137,7 @@ class _EditTopFivePageState extends State<EditTopFivePage> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: ChapterButton(
-                label: 'Save top 5',
-                onPressed: () => context.pop(),
-              ),
+              child: ChapterButton(label: 'Save top 5', onPressed: _save),
             ),
           ],
         ),

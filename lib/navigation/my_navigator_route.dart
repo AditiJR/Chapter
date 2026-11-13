@@ -10,7 +10,7 @@ enum MyNavigatorRoute {
   permissions("/permissions", "permissions"),
   library("/library", "library"),
   libraryEmpty("empty", "library-empty"),
-  shelfDetail("shelf/:name", "shelf-detail"),
+  shelfDetail("shelf/:id", "shelf-detail"),
   search("/search", "search"),
   scan("/scan", "scan"),
   bookDetails("/book/:title", "book-details"),

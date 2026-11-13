@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../model/book.dart';
-import '../../../services/mock.dart';
 import '../../../theme/theme.dart';
 import '../../../widgets/book_cover.dart';
 import '../../../widgets/chapter_bottom_sheet.dart';
 import '../../../widgets/chapter_button.dart';
 import '../../../widgets/chapter_chip.dart';
+import '../../../blocs/library/library_cubit.dart';
+import '../../../utilities/guarded.dart';
 
-/// Shelf order used by chips and radio lists.
-const shelfOrder = [
-  ReadingStatus.reading,
-  ReadingStatus.finished,
-  ReadingStatus.toBeRead,
-  ReadingStatus.dnf,
-];
-
-Future<void> showScanResultSheet(BuildContext context) {
+Future<void> showScanResultSheet(BuildContext context, Book book) {
   return showChapterSheet<void>(
     context,
     barrierColor: const Color(0x4D000000),
-    builder: (_) => _ScanResultSheet(parentContext: context),
+    builder: (_) => _ScanResultSheet(parentContext: context, book: book),
   );
 }
 
 class _ScanResultSheet extends StatefulWidget {
-  const _ScanResultSheet({required this.parentContext});
+  const _ScanResultSheet({required this.parentContext, required this.book});
+
+  /// The book returned by the ISBN lookup.
+  final Book book;
 
   /// Context of the scan page, used to navigate after the sheet closes.
   final BuildContext parentContext;
@@ -36,10 +33,23 @@ class _ScanResultSheet extends StatefulWidget {
 }
 
 class _ScanResultSheetState extends State<_ScanResultSheet> {
-  ReadingStatus _shelf = ReadingStatus.finished;
+  String _shelfId = ReadingStatus.finished.shelfId;
+
+  Future<void> _add() async {
+    final cubit = context.read<LibraryCubit>();
+    final parent = widget.parentContext;
+    final book = widget.book;
+    Navigator.of(context).pop();
+    await guarded(parent, () => cubit.addBook(book, shelfId: _shelfId));
+    if (parent.mounted) {
+      parent.push('/book/${Uri.encodeComponent(book.title)}', extra: book);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<LibraryCubit>().state;
+    final shelves = state is LibraryLoaded ? state.shelves : const [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -51,9 +61,9 @@ class _ScanResultSheetState extends State<_ScanResultSheet> {
         Row(
           children: [
             BookCover(
-              color: piranesi.coverColor,
-              title: piranesi.title,
-              author: piranesi.author,
+              color: widget.book.coverColor,
+              title: widget.book.title,
+              author: widget.book.author,
               width: 84,
               height: 126,
             ),
@@ -62,15 +72,15 @@ class _ScanResultSheetState extends State<_ScanResultSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(piranesi.title, style: ChapterText.titleLarge),
+                  Text(widget.book.title, style: ChapterText.titleLarge),
                   const SizedBox(height: 4),
                   Text(
-                    '${piranesi.author} · ${piranesi.year}',
+                    '${widget.book.author}${widget.book.year != null ? ' · ${widget.book.year}' : ''}',
                     style: ChapterText.bodyMedium,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'ISBN 9781635575637',
+                    'ISBN ${widget.book.isbn ?? 'unknown'}',
                     style: ChapterText.labelMedium.copyWith(
                       color: ChapterColors.onSurfaceVariant,
                     ),
@@ -99,24 +109,16 @@ class _ScanResultSheetState extends State<_ScanResultSheet> {
           spacing: 8,
           runSpacing: 0,
           children: [
-            for (final status in shelfOrder)
+            for (final shelf in shelves)
               ChapterChip(
-                label: status.label,
-                selected: status == _shelf,
-                onTap: () => setState(() => _shelf = status),
+                label: shelf.name,
+                selected: shelf.id == _shelfId,
+                onTap: () => setState(() => _shelfId = shelf.id),
               ),
           ],
         ),
         const SizedBox(height: 12),
-        ChapterButton(
-          label: 'Add to library',
-          onPressed: () {
-            Navigator.of(context).pop();
-            widget.parentContext.push(
-              '/book/${Uri.encodeComponent(piranesi.title)}',
-            );
-          },
-        ),
+        ChapterButton(label: 'Add to library', onPressed: _add),
         const SizedBox(height: 8),
         ChapterButton(
           label: 'Scan again',

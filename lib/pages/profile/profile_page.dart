@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../blocs/authentication/authentication_bloc.dart';
+import '../../blocs/library/library_cubit.dart';
+import '../../navigation/book_navigation.dart';
 
 import '../../navigation/my_navigator_route.dart';
-import '../../services/mock.dart';
+import '../../model/book.dart';
 import '../../theme/theme.dart';
 import '../../widgets/book_cover.dart';
 import '../../widgets/chapter_button.dart';
@@ -19,6 +21,9 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = context.read<AuthenticationBloc>().user;
+    final library = context.watch<LibraryCubit>().state;
+    final books = library is LibraryLoaded ? library.books.length : 0;
+    final topFive = library is LibraryLoaded ? library.topFive : const <Book>[];
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -66,18 +71,18 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 6),
             Center(
               child: Text(
-                '@aditi · reading since Oct 2026',
+                '${user?.handle ?? ''} · reading since Oct 2026',
                 style: ChapterText.bodyMedium,
               ),
             ),
             const SizedBox(height: 14),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
               child: Row(
                 children: [
-                  _Stat(value: '38', label: 'Books'),
-                  _Stat(value: '24', label: 'Followers'),
-                  _Stat(value: '31', label: 'Following'),
+                  _Stat(value: '$books', label: 'Books'),
+                  const _Stat(value: '0', label: 'Followers'),
+                  const _Stat(value: '0', label: 'Following'),
                 ],
               ),
             ),
@@ -96,18 +101,30 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 14),
             Row(
               children: [
-                for (var i = 0; i < topFiveColors.length; i++) ...[
+                for (var i = 0; i < 5; i++) ...[
                   if (i > 0) const SizedBox(width: 8),
                   Expanded(
                     child: AspectRatio(
                       aspectRatio: 61 / 92,
-                      child: LayoutBuilder(
-                        builder: (context, c) => BookCover(
-                          color: topFiveColors[i],
-                          width: c.maxWidth,
-                          height: c.maxHeight,
-                        ),
-                      ),
+                      child: i < topFive.length
+                          ? GestureDetector(
+                              onTap: () => context.openBook(topFive[i]),
+                              child: LayoutBuilder(
+                                builder: (context, c) => BookCover(
+                                  color: topFive[i].coverColor,
+                                  width: c.maxWidth,
+                                  height: c.maxHeight,
+                                ),
+                              ),
+                            )
+                          : DecoratedBox(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: ChapterColors.outlineVariant,
+                                ),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
                     ),
                   ),
                 ],

@@ -4,9 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'blocs/authentication/authentication_bloc.dart';
+import 'blocs/library/library_cubit.dart';
 import 'firebase_options.dart';
 import 'navigation/router.dart';
 import 'repositories/authentication/authentication_repository.dart';
+import 'repositories/books/books_repository.dart';
+import 'repositories/library/library_repository.dart';
 import 'theme/theme.dart';
 
 Future<void> main() async {
@@ -25,6 +28,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late final AuthenticationRepository _authenticationRepository =
       FirebaseAuthenticationRepository();
+  late final BooksRepository _booksRepository = GoogleBooksRepository();
+  late final LibraryRepository _libraryRepository =
+      FirestoreLibraryRepository();
+  late final LibraryCubit _libraryCubit = LibraryCubit(
+    _libraryRepository,
+    _authenticationRepository,
+  );
   late final AuthenticationBloc _authenticationBloc = AuthenticationBloc(
     _authenticationRepository,
   );
@@ -33,6 +43,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _authenticationBloc.close();
+    _libraryCubit.close();
     super.dispose();
   }
 
@@ -43,10 +54,13 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<AuthenticationRepository>.value(
           value: _authenticationRepository,
         ),
+        RepositoryProvider<BooksRepository>.value(value: _booksRepository),
+        RepositoryProvider<LibraryRepository>.value(value: _libraryRepository),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthenticationBloc>.value(value: _authenticationBloc),
+          BlocProvider<LibraryCubit>.value(value: _libraryCubit),
         ],
         child: MaterialApp.router(
           title: 'Chapter',
