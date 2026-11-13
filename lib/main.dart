@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -5,11 +7,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'blocs/authentication/authentication_bloc.dart';
+import 'model/app_user.dart';
 import 'blocs/library/library_cubit.dart';
 import 'firebase_options.dart';
 import 'navigation/my_navigator_route.dart';
 import 'navigation/router.dart';
 import 'repositories/authentication/authentication_repository.dart';
+import 'repositories/chat/chat_repository.dart';
+import 'repositories/users/user_repository.dart';
 import 'repositories/books/books_repository.dart';
 import 'repositories/library/library_repository.dart';
 import 'services/notification_service.dart';
@@ -31,6 +36,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late final AuthenticationRepository _authenticationRepository =
       FirebaseAuthenticationRepository();
+  late final UserRepository _userRepository = FirestoreUserRepository();
+  late final ChatRepository _chatRepository = FirestoreChatRepository();
   late final BooksRepository _booksRepository = GoogleBooksRepository();
   late final LibraryRepository _libraryRepository =
       FirestoreLibraryRepository();
@@ -40,7 +47,9 @@ class _MyAppState extends State<MyApp> {
   );
   late final AuthenticationBloc _authenticationBloc = AuthenticationBloc(
     _authenticationRepository,
+    _userRepository,
   );
+  StreamSubscription<AppUser?>? _profileSub;
   late final GoRouter _router = buildRouter(_authenticationBloc);
   final GlobalKey<ScaffoldMessengerState> _messengerKey =
       GlobalKey<ScaffoldMessengerState>();
@@ -48,6 +57,15 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // Make sure every signed-in user (including accounts created before
+    // profiles existed) has a profile others can find.
+    _profileSub = _authenticationRepository.userChanges.listen((user) {
+      if (user != null) {
+        _userRepository.ensureProfile(user).catchError((Object e) {
+          debugPrint('Chapter profile setup failed: $e');
+        });
+      }
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeNotifications();
     });
@@ -89,6 +107,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    _profileSub?.cancel();
     NotificationService.instance.dispose();
     _router.dispose();
     _authenticationBloc.close();
@@ -103,6 +122,8 @@ class _MyAppState extends State<MyApp> {
         RepositoryProvider<AuthenticationRepository>.value(
           value: _authenticationRepository,
         ),
+        RepositoryProvider<UserRepository>.value(value: _userRepository),
+        RepositoryProvider<ChatRepository>.value(value: _chatRepository),
         RepositoryProvider<BooksRepository>.value(value: _booksRepository),
         RepositoryProvider<LibraryRepository>.value(value: _libraryRepository),
       ],

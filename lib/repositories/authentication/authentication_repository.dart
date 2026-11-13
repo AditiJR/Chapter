@@ -23,6 +23,7 @@ abstract class AuthenticationRepository {
     required String password,
   });
   Future<void> sendPasswordReset({required String email});
+  Future<void> updateDisplayName(String name);
   Future<void> signOut();
 }
 
@@ -92,6 +93,12 @@ class FirebaseAuthenticationRepository extends AuthenticationRepository {
     } on fb.FirebaseAuthException catch (e) {
       throw AuthException(_messageFor(e));
     }
+  }
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    await _auth.currentUser?.updateDisplayName(name.trim());
+    await _auth.currentUser?.reload();
   }
 
   @override

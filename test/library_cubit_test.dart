@@ -29,6 +29,9 @@ class _FakeAuth extends AuthenticationRepository {
   @override
   Future<void> sendPasswordReset({required String email}) async {}
   @override
+  Future<void> updateDisplayName(String name) async {}
+
+  @override
   Future<void> signOut() async {}
 }
 

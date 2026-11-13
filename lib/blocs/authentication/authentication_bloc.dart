@@ -4,13 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../model/app_user.dart';
 import '../../repositories/authentication/authentication_repository.dart';
+import '../../repositories/users/user_repository.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  AuthenticationBloc(this.authenticationRepository)
+  AuthenticationBloc(this.authenticationRepository, [this.userRepository])
     : super(AuthenticationInitial()) {
     on<AuthenticationUserChangedEvent>(_handleUserChanged);
     on<AuthenticationSignInEvent>(_handleSignIn);
@@ -24,6 +25,7 @@ class AuthenticationBloc
   }
 
   final AuthenticationRepository authenticationRepository;
+  final UserRepository? userRepository;
   late final StreamSubscription<AppUser?> _subscription;
 
   /// The signed-in user, or null.
@@ -78,6 +80,11 @@ class AuthenticationBloc
         email: event.email,
         password: event.password,
       );
+      // The account exists now; a profile failure should not block sign-up
+      // because it is created again on the next sign-in.
+      try {
+        await userRepository?.createProfile(user);
+      } catch (_) {}
       emit(AuthenticationAuthenticated(user));
     } on AuthException catch (e) {
       emit(AuthenticationError(errorText: e.message));

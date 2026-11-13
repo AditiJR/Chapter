@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../blocs/authentication/authentication_bloc.dart';
+import '../../model/chat.dart';
+import '../../repositories/chat/chat_repository.dart';
+import '../../repositories/users/user_repository.dart';
 import '../../theme/theme.dart';
+import '../../utilities/guarded.dart';
 import '../../widgets/chapter_top_bar.dart';
 
-class _Message {
-  const _Message(this.text, {required this.mine});
-  final String text;
-  final bool mine;
-}
-
+/// Live one-to-one chat with [uid], stored in Firestore.
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key, required this.name});
+  const ChatPage({super.key, required this.uid, this.name});
 
-  final String name;
+  final String uid;
+
+  /// Shown in the top bar until the other user's profile loads.
+  final String? name;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -21,27 +25,68 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final _controller = TextEditingController();
-  final _messages = <_Message>[
-    const _Message('Did you finish Piranesi yet?', mine: false),
-    const _Message('Last night! Still thinking about the ending', mine: true),
-    const _Message('No spoilers please. Adding it to my TBR', mine: false),
-    const _Message(
-      'You will love it. I put it on my Favorites shelf',
-      mine: true,
-    ),
-  ];
+  final _scroll = ScrollController();
 
-  void _send() {
+  late final String _myUid;
+  late final String _chatId;
+  late final Future<void> _ready;
+  String? _name;
+
+  @override
+  void initState() {
+    super.initState();
+    final me = context.read<AuthenticationBloc>().user!;
+    final chats = context.read<ChatRepository>();
+    final users = context.read<UserRepository>();
+    _myUid = me.uid;
+    _chatId = chats.chatId(me.uid, widget.uid);
+    _name = widget.name;
+    _ready = _open(me.displayName, chats, users);
+  }
+
+  /// The chat document must exist before its messages can be read.
+  Future<void> _open(
+    String myName,
+    ChatRepository chats,
+    UserRepository users,
+  ) async {
+    final other = await users.getProfile(widget.uid);
+    final otherName = other?.displayName ?? _name ?? 'Reader';
+    if (mounted) setState(() => _name = otherName);
+    await chats.openChat(
+      myUid: _myUid,
+      myName: myName,
+      otherUid: widget.uid,
+      otherName: otherName,
+    );
+  }
+
+  Future<void> _send() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-    setState(() => _messages.add(_Message(text, mine: true)));
     _controller.clear();
+    await guarded(context, () async {
+      await context.read<ChatRepository>().send(
+        chatId: _chatId,
+        senderId: _myUid,
+        text: text,
+      );
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _scroll.dispose();
     super.dispose();
+  }
+
+  void _scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scroll.hasClients) {
+        _scroll.jumpTo(_scroll.position.maxScrollExtent);
+      }
+    });
   }
 
   @override
@@ -50,53 +95,58 @@ class _ChatPageState extends State<ChatPage> {
       body: SafeArea(
         child: Column(
           children: [
-            ChapterTopBar(title: widget.name),
+            ChapterTopBar(title: _name ?? 'Chat'),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                children: [
-                  Center(
-                    child: Text(
-                      'Today',
-                      style: ChapterText.labelMedium.copyWith(
-                        color: ChapterColors.onSurfaceVariant,
+              child: FutureBuilder<void>(
+                future: _ready,
+                builder: (context, ready) {
+                  if (ready.hasError) {
+                    return Center(
+                      child: Text(
+                        'Could not open this chat.\n${ready.error}',
+                        textAlign: TextAlign.center,
+                        style: ChapterText.bodyMedium,
                       ),
+                    );
+                  }
+                  if (ready.connectionState != ConnectionState.done) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return StreamBuilder<List<ChatMessage>>(
+                    stream: context.read<ChatRepository>().watchMessages(
+                      _chatId,
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  for (final m in _messages)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Align(
-                        alignment: m.mine
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.78,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: m.mine
-                                ? ChapterColors.primary
-                                : ChapterColors.surfaceVariant,
-                            borderRadius: BorderRadius.circular(18),
-                          ),
+                    builder: (context, snap) {
+                      if (snap.hasError) {
+                        return Center(
                           child: Text(
-                            m.text,
-                            style: ChapterText.bodyMedium.copyWith(
-                              color: m.mine
-                                  ? ChapterColors.onPrimary
-                                  : ChapterColors.onSurface,
-                            ),
+                            'Could not load messages.\n${snap.error}',
+                            textAlign: TextAlign.center,
+                            style: ChapterText.bodyMedium,
                           ),
-                        ),
-                      ),
-                    ),
-                ],
+                        );
+                      }
+                      final messages = snap.data ?? const <ChatMessage>[];
+                      if (snap.hasData && messages.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'Say hi to ${_name ?? 'your friend'}!',
+                            style: ChapterText.bodyMedium,
+                          ),
+                        );
+                      }
+                      _scrollToEnd();
+                      return ListView(
+                        controller: _scroll,
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        children: [
+                          for (final m in messages)
+                            _Bubble(message: m, mine: m.senderId == _myUid),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
             ),
             Padding(
@@ -146,6 +196,39 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Bubble extends StatelessWidget {
+  const _Bubble({required this.message, required this.mine});
+
+  final ChatMessage message;
+  final bool mine;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Align(
+        alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.78,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: mine ? ChapterColors.primary : ChapterColors.surfaceVariant,
+            borderRadius: BorderRadius.circular(18),
+          ),
+          child: Text(
+            message.text,
+            style: ChapterText.bodyMedium.copyWith(
+              color: mine ? ChapterColors.onPrimary : ChapterColors.onSurface,
+            ),
+          ),
         ),
       ),
     );

@@ -101,8 +101,10 @@ GoRouter buildRouter(AuthenticationBloc authBloc) => GoRouter(
     GoRoute(
       path: MyNavigatorRoute.chat.path,
       name: MyNavigatorRoute.chat.name,
-      builder: (context, state) =>
-          ChatPage(name: state.pathParameters['name'] ?? 'Maya Chen'),
+      builder: (context, state) => ChatPage(
+        uid: state.pathParameters['uid'] ?? '',
+        name: state.extra as String?,
+      ),
     ),
     GoRoute(
       path: MyNavigatorRoute.friendProfile.path,
