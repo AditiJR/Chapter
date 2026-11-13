@@ -28,15 +28,20 @@ class _PermissionsPageState extends State<PermissionsPage> {
       setState(() {
         _notificationStatus = switch (status) {
           AuthorizationStatus.authorized => 'Notifications enabled',
-          AuthorizationStatus.provisional => 'Notifications provisionally enabled',
+          AuthorizationStatus.provisional =>
+            'Notifications provisionally enabled',
           AuthorizationStatus.denied =>
             'Permission denied. You can enable it in device Settings.',
+          AuthorizationStatus.deniedPermanently =>
+            'Notifications blocked. Enable them in device Settings.',
           AuthorizationStatus.notDetermined => 'Permission not granted',
         };
       });
     } catch (error) {
       if (!mounted) return;
-      setState(() => _notificationStatus = 'Could not enable notifications: $error');
+      setState(
+        () => _notificationStatus = 'Could not enable notifications: $error',
+      );
     } finally {
       if (mounted) setState(() => _requestingNotifications = false);
     }
@@ -70,9 +75,14 @@ class _PermissionsPageState extends State<PermissionsPage> {
               _PermissionCard(
                 icon: 'assets/icons/bell_permission.svg',
                 title: 'Notifications',
-                body: 'Get a nudge when a friend follows you or sends a message.',
-                action: _requestingNotifications ? 'Checking...' : 'Allow notifications',
-                onPressed: _requestingNotifications ? null : _requestNotifications,
+                body:
+                    'Get a nudge when a friend follows you or sends a message.',
+                action: _requestingNotifications
+                    ? 'Checking...'
+                    : 'Allow notifications',
+                onPressed: _requestingNotifications
+                    ? null
+                    : _requestNotifications,
               ),
               const SizedBox(height: 8),
               Text(_notificationStatus, style: ChapterText.bodyMedium),
@@ -87,7 +97,9 @@ class _PermissionsPageState extends State<PermissionsPage> {
                   onTap: () => context.go(MyNavigatorRoute.library.path),
                   child: Text(
                     'Not now',
-                    style: ChapterText.labelLarge.copyWith(color: ChapterColors.primary),
+                    style: ChapterText.labelLarge.copyWith(
+                      color: ChapterColors.primary,
+                    ),
                   ),
                 ),
               ),

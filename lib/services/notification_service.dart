@@ -3,11 +3,10 @@ import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 
-/// Minimal Firebase Cloud Messaging integration for Chapter.
+/// Receives FCM notifications and registers the device for test delivery.
 ///
-/// FCM sends notification messages to the OS in the background. While Chapter
-/// is foregrounded, the app displays the message using its ScaffoldMessenger.
-/// For a demo, the Firebase Console can send a test message to [token].
+/// firebase_messaging 17 uses Firebase Installation IDs rather than legacy
+/// registration tokens. The Android manifest must enable FID registration.
 class NotificationService {
   NotificationService._();
 
@@ -16,9 +15,10 @@ class NotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   StreamSubscription<RemoteMessage>? _foregroundSubscription;
   StreamSubscription<RemoteMessage>? _openedSubscription;
-  StreamSubscription<String>? _tokenSubscription;
+  StreamSubscription<String>? _registrationSubscription;
 
-  String? token;
+  /// Available asynchronously from onRegistered after successful registration.
+  String? installationId;
 
   Future<void> initialize({
     required void Function(RemoteMessage message) onForegroundMessage,
@@ -30,19 +30,22 @@ class NotificationService {
     _openedSubscription ??= FirebaseMessaging.onMessageOpenedApp.listen(
       onOpenedMessage,
     );
-    _tokenSubscription ??= _messaging.onTokenRefresh.listen((newToken) {
-      token = newToken;
-      if (kDebugMode) debugPrint('Chapter FCM token refreshed: $newToken');
+
+    // Listen BEFORE calling register() so registration events are not missed.
+    _registrationSubscription ??= _messaging.onRegistered.listen((id) {
+      installationId = id;
+      // Only print during development. Treat device identifiers as private.
+      if (kDebugMode) debugPrint('Chapter FCM installation ID: $id');
     });
 
-    // A notification could have launched Chapter from a terminated state.
+    // A notification could have launched the app from a terminated state.
     final initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) onOpenedMessage(initialMessage);
 
-    // Do not show an OS permission prompt until the user taps the button.
+    // Do not prompt at launch: permissions are requested from the UI button.
     final settings = await _messaging.getNotificationSettings();
     if (_isAllowed(settings.authorizationStatus)) {
-      await refreshToken();
+      await registerDevice();
     }
   }
 
@@ -53,7 +56,7 @@ class NotificationService {
       sound: true,
     );
     if (_isAllowed(settings.authorizationStatus)) {
-      await refreshToken();
+      await registerDevice();
     }
     return settings.authorizationStatus;
   }
@@ -62,33 +65,31 @@ class NotificationService {
       status == AuthorizationStatus.authorized ||
       status == AuthorizationStatus.provisional;
 
-  Future<String?> refreshToken() async {
-    try {
-      // On Apple platforms, APNs registration may take a moment to complete.
-      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-        final apnsToken = await _messaging.getAPNSToken();
-        if (apnsToken == null) {
-          if (kDebugMode) debugPrint('Chapter FCM: waiting for APNs token');
-          return null;
-        }
+  Future<void> registerDevice() async {
+    // APNs registration is required before Firebase Messaging registration
+    // on Apple platforms. This project is tested on Android first.
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      final apnsToken = await _messaging.getAPNSToken();
+      if (apnsToken == null) {
+        if (kDebugMode) debugPrint('Chapter FCM: waiting for APNs token');
+        return;
       }
-      token = await _messaging.getToken();
-      // Printed only during development so Firebase Console can target this
-      // device for a test message. Do not log registration tokens in production.
-      if (kDebugMode) debugPrint('Chapter FCM test token: $token');
-      return token;
-    } catch (e) {
-      if (kDebugMode) debugPrint('Chapter FCM token unavailable: $e');
-      return null;
+    }
+    try {
+      await _messaging.register();
+      // The ID is sent asynchronously to onRegistered (listener above).
+    } catch (error) {
+      if (kDebugMode) debugPrint('Chapter FCM registration failed: $error');
+      rethrow;
     }
   }
 
   Future<void> dispose() async {
     await _foregroundSubscription?.cancel();
     await _openedSubscription?.cancel();
-    await _tokenSubscription?.cancel();
+    await _registrationSubscription?.cancel();
     _foregroundSubscription = null;
     _openedSubscription = null;
-    _tokenSubscription = null;
+    _registrationSubscription = null;
   }
 }
