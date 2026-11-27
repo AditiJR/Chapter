@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../model/book.dart';
-import '../model/friend.dart';
 
 // Shelves, books and the Top 5 now come from Firestore (see
 // repositories/library). What remains here is placeholder content for
@@ -42,33 +41,3 @@ const mockPopularBooks = [
     "M. Miller",
   ),
 ];
-
-const mockMaya = Friend(
-  name: "Maya Chen",
-  handle: "maya",
-  books: 142,
-  tone: AvatarTone.yellow,
-);
-const mockJordan = Friend(
-  name: "Jordan Lee",
-  handle: "jordan",
-  books: 64,
-  tone: AvatarTone.peach,
-);
-const mockPriya = Friend(
-  name: "Priya Nair",
-  handle: "priya",
-  books: 211,
-  tone: AvatarTone.pink,
-);
-const mockSam = Friend(
-  name: "Sam Ortiz",
-  handle: "samreads",
-  books: 96,
-  tone: AvatarTone.yellow,
-);
-
-const mockFriends = [mockMaya, mockJordan, mockPriya, mockSam];
-
-Friend findFriend(String name) =>
-    mockFriends.firstWhere((f) => f.name == name, orElse: () => mockMaya);

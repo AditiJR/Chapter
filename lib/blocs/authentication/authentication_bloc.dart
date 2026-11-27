@@ -11,11 +11,16 @@ part 'authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  AuthenticationBloc(this.authenticationRepository, [this.userRepository])
+  AuthenticationBloc(
+    this.authenticationRepository, [
+    this.userRepository,
+    this.beforeSignOut,
+  ])
     : super(AuthenticationInitial()) {
     on<AuthenticationUserChangedEvent>(_handleUserChanged);
     on<AuthenticationSignInEvent>(_handleSignIn);
     on<AuthenticationSignUpEvent>(_handleSignUp);
+    on<AuthenticationGoogleSignInEvent>(_handleGoogleSignIn);
     on<AuthenticationPasswordResetEvent>(_handlePasswordReset);
     on<AuthenticationSignOutEvent>(_handleSignOut);
 
@@ -26,6 +31,9 @@ class AuthenticationBloc
 
   final AuthenticationRepository authenticationRepository;
   final UserRepository? userRepository;
+
+  /// Runs while the user is still signed in, e.g. to unregister this device.
+  final Future<void> Function(AppUser user)? beforeSignOut;
   late final StreamSubscription<AppUser?> _subscription;
 
   /// The signed-in user, or null.
@@ -93,6 +101,25 @@ class AuthenticationBloc
     }
   }
 
+  Future<void> _handleGoogleSignIn(
+    AuthenticationGoogleSignInEvent event,
+    Emitter<AuthenticationState> emit,
+  ) async {
+    emit(AuthenticationWaiting());
+    try {
+      final user = await authenticationRepository.signInWithGoogle();
+      // First Google sign-in has no profile document yet; later ones keep it.
+      try {
+        await userRepository?.ensureProfile(user);
+      } catch (_) {}
+      emit(AuthenticationAuthenticated(user));
+    } on AuthException catch (e) {
+      emit(AuthenticationError(errorText: e.message));
+    } catch (e) {
+      emit(AuthenticationError(errorText: 'Something went wrong. $e'));
+    }
+  }
+
   Future<void> _handlePasswordReset(
     AuthenticationPasswordResetEvent event,
     Emitter<AuthenticationState> emit,
@@ -113,6 +140,12 @@ class AuthenticationBloc
     Emitter<AuthenticationState> emit,
   ) async {
     emit(AuthenticationWaiting());
+    final current = authenticationRepository.currentUser;
+    if (current != null) {
+      try {
+        await beforeSignOut?.call(current);
+      } catch (_) {}
+    }
     await authenticationRepository.signOut();
     emit(AuthenticationUnauthenticated());
   }

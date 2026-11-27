@@ -110,7 +110,7 @@ GoRouter buildRouter(AuthenticationBloc authBloc) => GoRouter(
       path: MyNavigatorRoute.friendProfile.path,
       name: MyNavigatorRoute.friendProfile.name,
       builder: (context, state) =>
-          FriendProfilePage(name: state.pathParameters['name'] ?? 'Maya Chen'),
+          FriendProfilePage(uid: state.pathParameters['uid'] ?? ''),
     ),
     GoRoute(
       path: MyNavigatorRoute.notifications.path,

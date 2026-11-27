@@ -9,6 +9,9 @@ import '../../navigation/book_navigation.dart';
 
 import '../../navigation/my_navigator_route.dart';
 import '../../model/book.dart';
+import '../../model/user_profile.dart';
+import '../../repositories/social/social_repository.dart';
+import '../../repositories/users/user_repository.dart';
 import '../../theme/theme.dart';
 import '../../widgets/book_cover.dart';
 import '../../widgets/chapter_button.dart';
@@ -62,18 +65,27 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Center(
-              child: Text(
-                user?.firstName ?? '',
-                style: ChapterText.headlineMedium,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Center(
-              child: Text(
-                '${user?.handle ?? ''} · reading since Oct 2026',
-                style: ChapterText.bodyMedium,
-              ),
+            StreamBuilder<UserProfile?>(
+              stream: user == null
+                  ? null
+                  : context.read<UserRepository>().watchProfile(user.uid),
+              builder: (context, snap) {
+                final profile = snap.data;
+                final name = (profile?.displayName.trim().isNotEmpty ?? false)
+                    ? profile!.displayName.split(' ').first
+                    : (user?.firstName ?? '');
+                final handle = profile?.handle ?? user?.handle ?? '';
+                return Column(
+                  children: [
+                    Text(name, style: ChapterText.headlineMedium),
+                    const SizedBox(height: 6),
+                    Text(
+                      '$handle · reading since Oct 2026',
+                      style: ChapterText.bodyMedium,
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 14),
             Padding(
@@ -81,8 +93,28 @@ class ProfilePage extends StatelessWidget {
               child: Row(
                 children: [
                   _Stat(value: '$books', label: 'Books'),
-                  const _Stat(value: '0', label: 'Followers'),
-                  const _Stat(value: '0', label: 'Following'),
+                  StreamBuilder<Set<String>>(
+                    stream: user == null
+                        ? null
+                        : context.read<SocialRepository>().watchFollowers(
+                            user.uid,
+                          ),
+                    builder: (context, s) => _Stat(
+                      value: '${(s.data ?? const {}).length}',
+                      label: 'Followers',
+                    ),
+                  ),
+                  StreamBuilder<Set<String>>(
+                    stream: user == null
+                        ? null
+                        : context.read<SocialRepository>().watchFollowing(
+                            user.uid,
+                          ),
+                    builder: (context, s) => _Stat(
+                      value: '${(s.data ?? const {}).length}',
+                      label: 'Following',
+                    ),
+                  ),
                 ],
               ),
             ),

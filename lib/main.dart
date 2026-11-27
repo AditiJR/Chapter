@@ -13,6 +13,7 @@ import 'firebase_options.dart';
 import 'navigation/my_navigator_route.dart';
 import 'navigation/router.dart';
 import 'repositories/authentication/authentication_repository.dart';
+import 'repositories/social/social_repository.dart';
 import 'repositories/chat/chat_repository.dart';
 import 'repositories/users/user_repository.dart';
 import 'repositories/books/books_repository.dart';
@@ -38,6 +39,7 @@ class _MyAppState extends State<MyApp> {
       FirebaseAuthenticationRepository();
   late final UserRepository _userRepository = FirestoreUserRepository();
   late final ChatRepository _chatRepository = FirestoreChatRepository();
+  late final SocialRepository _socialRepository = FirestoreSocialRepository();
   late final BooksRepository _booksRepository = GoogleBooksRepository();
   late final LibraryRepository _libraryRepository =
       FirestoreLibraryRepository();
@@ -48,6 +50,10 @@ class _MyAppState extends State<MyApp> {
   late final AuthenticationBloc _authenticationBloc = AuthenticationBloc(
     _authenticationRepository,
     _userRepository,
+    (user) async {
+      final id = NotificationService.instance.installationId;
+      if (id != null) await _userRepository.removeDevice(user.uid, id);
+    },
   );
   StreamSubscription<AppUser?>? _profileSub;
   late final GoRouter _router = buildRouter(_authenticationBloc);
@@ -61,6 +67,7 @@ class _MyAppState extends State<MyApp> {
     // profiles existed) has a profile others can find.
     _profileSub = _authenticationRepository.userChanges.listen((user) {
       if (user != null) {
+        _saveDevice(user.uid);
         _userRepository.ensureProfile(user).catchError((Object e) {
           debugPrint('Chapter profile setup failed: $e');
         });
@@ -68,6 +75,15 @@ class _MyAppState extends State<MyApp> {
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeNotifications();
+    });
+  }
+
+  /// Registers this device with the signed-in user so pushes can reach it.
+  void _saveDevice(String uid) {
+    NotificationService.instance.listenForRegistration((id) {
+      _userRepository.saveDevice(uid, id).catchError((Object e) {
+        debugPrint('Chapter device save failed: $e');
+      });
     });
   }
 
@@ -83,20 +99,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _showForegroundNotification(RemoteMessage message) {
-    if (!mounted) return;
-    final title = message.notification?.title ?? 'Chapter';
-    final body = message.notification?.body ?? 'You have a new notification.';
-    _messengerKey.currentState
-      ?..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('$title\n$body'),
-          action: SnackBarAction(
-            label: 'View',
-            onPressed: () => _openNotification(message),
-          ),
-        ),
-      );
+    // While the app is open, the in-app banner (driven by Firestore) already
+    // announces the same event, so showing this push too would duplicate it.
   }
 
   void _openNotification(RemoteMessage message) {
@@ -124,6 +128,7 @@ class _MyAppState extends State<MyApp> {
         ),
         RepositoryProvider<UserRepository>.value(value: _userRepository),
         RepositoryProvider<ChatRepository>.value(value: _chatRepository),
+        RepositoryProvider<SocialRepository>.value(value: _socialRepository),
         RepositoryProvider<BooksRepository>.value(value: _booksRepository),
         RepositoryProvider<LibraryRepository>.value(value: _libraryRepository),
       ],

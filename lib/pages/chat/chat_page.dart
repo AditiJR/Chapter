@@ -4,7 +4,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../blocs/authentication/authentication_bloc.dart';
 import '../../model/chat.dart';
+import '../../model/social.dart';
 import '../../repositories/chat/chat_repository.dart';
+import '../../repositories/social/social_repository.dart';
 import '../../repositories/users/user_repository.dart';
 import '../../theme/theme.dart';
 import '../../utilities/guarded.dart';
@@ -28,6 +30,7 @@ class _ChatPageState extends State<ChatPage> {
   final _scroll = ScrollController();
 
   late final String _myUid;
+  late final String _myName;
   late final String _chatId;
   late final Future<void> _ready;
   String? _name;
@@ -39,6 +42,7 @@ class _ChatPageState extends State<ChatPage> {
     final chats = context.read<ChatRepository>();
     final users = context.read<UserRepository>();
     _myUid = me.uid;
+    _myName = me.displayName;
     _chatId = chats.chatId(me.uid, widget.uid);
     _name = widget.name;
     _ready = _open(me.displayName, chats, users);
@@ -65,11 +69,21 @@ class _ChatPageState extends State<ChatPage> {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
     _controller.clear();
+    final social = context.read<SocialRepository>();
     await guarded(context, () async {
       await context.read<ChatRepository>().send(
         chatId: _chatId,
         senderId: _myUid,
         text: text,
+      );
+      // One "new message" notification per sender, replaced by each message.
+      await social.notify(
+        toUid: widget.uid,
+        docId: 'message_$_myUid',
+        type: NotificationType.message,
+        fromUid: _myUid,
+        fromName: _myName,
+        body: text,
       );
     });
   }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../model/app_user.dart';
 import '../../model/user_profile.dart';
@@ -13,6 +14,10 @@ abstract class UserRepository {
   Future<UserProfile?> getProfile(String uid);
   Stream<UserProfile?> watchProfile(String uid);
   Future<void> updateProfile(UserProfile profile);
+
+  /// Records this device's FCM installation ID so the push function can reach it.
+  Future<void> saveDevice(String uid, String installationId);
+  Future<void> removeDevice(String uid, String installationId);
 
   /// Every other user, for picking someone to message.
   Future<List<UserProfile>> listUsers({required String excludeUid});
@@ -57,6 +62,17 @@ class FirestoreUserRepository extends UserRepository {
   @override
   Future<void> updateProfile(UserProfile profile) =>
       _doc(profile.uid).set(profile.toMap(), SetOptions(merge: true));
+
+  @override
+  Future<void> saveDevice(String uid, String installationId) =>
+      _doc(uid).collection('devices').doc(installationId).set({
+        'platform': defaultTargetPlatform.name,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+  @override
+  Future<void> removeDevice(String uid, String installationId) =>
+      _doc(uid).collection('devices').doc(installationId).delete();
 
   @override
   Future<List<UserProfile>> listUsers({required String excludeUid}) async {

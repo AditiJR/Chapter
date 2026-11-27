@@ -20,6 +20,15 @@ class NotificationService {
   /// Available asynchronously from onRegistered after successful registration.
   String? installationId;
 
+  void Function(String id)? _onRegistered;
+
+  /// Called each time this device registers (and a first time if it already has).
+  void listenForRegistration(void Function(String id) callback) {
+    _onRegistered = callback;
+    final id = installationId;
+    if (id != null) callback(id);
+  }
+
   Future<void> initialize({
     required void Function(RemoteMessage message) onForegroundMessage,
     required void Function(RemoteMessage message) onOpenedMessage,
@@ -34,6 +43,7 @@ class NotificationService {
     // Listen BEFORE calling register() so registration events are not missed.
     _registrationSubscription ??= _messaging.onRegistered.listen((id) {
       installationId = id;
+      _onRegistered?.call(id);
       // Only print during development. Treat device identifiers as private.
       if (kDebugMode) debugPrint('Chapter FCM installation ID: $id');
     });

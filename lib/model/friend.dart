@@ -1,17 +1,6 @@
 enum AvatarTone { yellow, peach, pink }
 
-class Friend {
-  final String name;
-  final String handle;
-  final int books;
-  final AvatarTone tone;
-
-  const Friend({
-    required this.name,
-    required this.handle,
-    required this.books,
-    required this.tone,
-  });
-
-  String get summary => '@$handle · $books books';
-}
+/// A stable avatar colour per user, so the same person always looks the same.
+AvatarTone toneFor(String uid) =>
+    AvatarTone.values[uid.codeUnits.fold(0, (a, b) => a + b) %
+        AvatarTone.values.length];

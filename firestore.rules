@@ -34,11 +34,25 @@ service cloud.firestore {
         allow write: if isOwner(uid);
       }
 
+      // The mirror of someone's `following`: users who follow {uid}. Each
+      // follower writes only their own entry.
+      match /followers/{followerUid} {
+        allow read: if signedIn();
+        allow write: if isOwner(followerUid);
+      }
+
+      // FCM installation IDs of this user's devices. Only the owner writes
+      // them; the push Cloud Function reads them with admin access.
+      match /devices/{deviceId} {
+        allow read, write: if isOwner(uid);
+      }
+
       // Notifications are written by other users (e.g. "X followed you"),
-      // but only the owner can read or clear them.
+      // but only the owner can read or delete them.
       match /notifications/{notificationId} {
-        allow read, update, delete: if isOwner(uid);
-        allow create: if signedIn() && request.resource.data.fromUid == request.auth.uid;
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) ||
+          (signedIn() && request.resource.data.fromUid == request.auth.uid);
       }
     }
 

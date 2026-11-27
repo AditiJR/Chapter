@@ -29,4 +29,6 @@ class AuthenticationPasswordResetEvent extends AuthenticationEvent {
   final String email;
 }
 
+class AuthenticationGoogleSignInEvent extends AuthenticationEvent {}
+
 class AuthenticationSignOutEvent extends AuthenticationEvent {}

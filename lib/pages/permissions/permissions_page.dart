@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../navigation/my_navigator_route.dart';
 import '../../services/notification_service.dart';
@@ -16,8 +17,29 @@ class PermissionsPage extends StatefulWidget {
 }
 
 class _PermissionsPageState extends State<PermissionsPage> {
+  bool _requestingCamera = false;
+  String _cameraStatus = 'Needed to scan barcodes';
   bool _requestingNotifications = false;
   String _notificationStatus = 'Optional — tap below to enable';
+
+  Future<void> _requestCamera() async {
+    if (_requestingCamera) return;
+    setState(() => _requestingCamera = true);
+    try {
+      final status = await Permission.camera.request();
+      if (!mounted) return;
+      setState(() {
+        _cameraStatus = status.isGranted
+            ? 'Camera enabled'
+            : status.isPermanentlyDenied
+            ? 'Camera blocked. Enable it in device Settings.'
+            : 'Camera not allowed. You can still search by title or ISBN.';
+      });
+      if (status.isPermanentlyDenied) await openAppSettings();
+    } finally {
+      if (mounted) setState(() => _requestingCamera = false);
+    }
+  }
 
   Future<void> _requestNotifications() async {
     if (_requestingNotifications) return;
@@ -63,14 +85,15 @@ class _PermissionsPageState extends State<PermissionsPage> {
                 style: ChapterText.bodyLarge,
               ),
               const SizedBox(height: 16),
-              const _PermissionCard(
+              _PermissionCard(
                 icon: 'assets/icons/scan_permission.svg',
                 title: 'Camera',
                 body: "Used only to scan a book's ISBN barcode so it can be added to your shelves instantly.",
-                action: 'Allow camera',
-                // Camera permission belongs to the scanner integration,
-                // so don't claim it is granted here yet.
+                action: _requestingCamera ? 'Checking...' : 'Allow camera',
+                onPressed: _requestingCamera ? null : _requestCamera,
               ),
+              const SizedBox(height: 8),
+              Text(_cameraStatus, style: ChapterText.bodyMedium),
               const SizedBox(height: 16),
               _PermissionCard(
                 icon: 'assets/icons/bell_permission.svg',

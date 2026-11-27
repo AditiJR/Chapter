@@ -17,7 +17,7 @@ enum MyNavigatorRoute {
   friends("/friends", "friends"),
   messages("/messages", "messages"),
   chat("/chat/:uid", "chat"),
-  friendProfile("/friend/:name", "friend-profile"),
+  friendProfile("/friend/:uid", "friend-profile"),
   notifications("/notifications", "notifications"),
   settings("/settings", "settings"),
   editProfile("/edit-profile", "edit-profile"),

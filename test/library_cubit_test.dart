@@ -27,6 +27,8 @@ class _FakeAuth extends AuthenticationRepository {
     required String password,
   }) => throw UnimplementedError();
   @override
+  Future<AppUser> signInWithGoogle() => throw UnimplementedError();
+  @override
   Future<void> sendPasswordReset({required String email}) async {}
   @override
   Future<void> updateDisplayName(String name) async {}

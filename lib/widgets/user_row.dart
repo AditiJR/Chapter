@@ -1,63 +1,70 @@
 import 'package:flutter/material.dart';
 
 import '../model/friend.dart';
+import '../model/user_profile.dart';
 import '../theme/theme.dart';
 import 'chapter_avatar.dart';
 
-/// Avatar + name/handle + Follow toggle.
-class UserRow extends StatefulWidget {
-  const UserRow({super.key, required this.friend, this.onTap});
+/// Avatar + name/handle + Follow toggle for a real user.
+class UserRow extends StatelessWidget {
+  const UserRow({
+    super.key,
+    required this.profile,
+    required this.following,
+    required this.onToggleFollow,
+    this.onTap,
+  });
 
-  final Friend friend;
+  final UserProfile profile;
+  final bool following;
+  final VoidCallback onToggleFollow;
   final VoidCallback? onTap;
-
-  @override
-  State<UserRow> createState() => _UserRowState();
-}
-
-class _UserRowState extends State<UserRow> {
-  bool _following = false;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: SizedBox(
         height: 64,
         child: Row(
           children: [
-            ChapterAvatar(tone: widget.friend.tone, size: 44),
+            ChapterAvatar(tone: toneFor(profile.uid), size: 44),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.friend.name, style: ChapterText.titleMedium),
-                  Text(widget.friend.summary, style: ChapterText.bodySmall),
+                  Text(
+                    profile.displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ChapterText.titleMedium,
+                  ),
+                  Text(profile.handle, style: ChapterText.bodySmall),
                 ],
               ),
             ),
             GestureDetector(
-              onTap: () => setState(() => _following = !_following),
+              onTap: onToggleFollow,
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: _following
+                  color: following
                       ? ChapterColors.secondaryContainer
                       : Colors.transparent,
-                  border: _following
+                  border: following
                       ? null
                       : Border.all(color: ChapterColors.outline),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  _following ? 'Following' : 'Follow',
+                  following ? 'Following' : 'Follow',
                   style: ChapterText.labelLarge.copyWith(
-                    color: _following
+                    color: following
                         ? ChapterColors.onSecondaryContainer
                         : ChapterColors.primary,
                   ),

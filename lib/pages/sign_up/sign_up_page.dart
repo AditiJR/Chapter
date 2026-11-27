@@ -142,15 +142,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           ChapterButton(
                             label: 'Sign up with Google',
                             type: ChapterButtonType.outlined,
-                            onPressed: () => ScaffoldMessenger.of(context)
-                              ..hideCurrentSnackBar()
-                              ..showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Google sign-in is not set up yet.',
+                            onPressed: loading
+                                ? null
+                                : () => context.read<AuthenticationBloc>().add(
+                                    AuthenticationGoogleSignInEvent(),
                                   ),
-                                ),
-                              ),
                           ),
                           const Spacer(),
                           const SizedBox(height: 14),

@@ -23,6 +23,9 @@ abstract class AuthenticationRepository {
     required String password,
   });
   Future<void> sendPasswordReset({required String email});
+
+  /// Signs in (or creates the account) through Google.
+  Future<AppUser> signInWithGoogle();
   Future<void> updateDisplayName(String name);
   Future<void> signOut();
 }
@@ -87,6 +90,18 @@ class FirebaseAuthenticationRepository extends AuthenticationRepository {
   }
 
   @override
+  Future<AppUser> signInWithGoogle() async {
+    try {
+      final credential = await _auth.signInWithProvider(
+        fb.GoogleAuthProvider()..addScope('email'),
+      );
+      return _toAppUser(credential.user)!;
+    } on fb.FirebaseAuthException catch (e) {
+      throw AuthException(_messageFor(e));
+    }
+  }
+
+  @override
   Future<void> sendPasswordReset({required String email}) async {
     try {
       await _auth.sendPasswordResetEmail(email: email.trim());
@@ -123,7 +138,13 @@ class FirebaseAuthenticationRepository extends AuthenticationRepository {
       case 'network-request-failed':
         return 'Network error. Check your connection and try again.';
       case 'operation-not-allowed':
-        return 'Email/password sign-in is not enabled for this project.';
+        return 'That sign-in method is not enabled for this project.';
+      case 'canceled':
+      case 'web-context-canceled':
+      case 'popup-closed-by-user':
+        return 'Sign-in was cancelled.';
+      case 'account-exists-with-different-credential':
+        return 'An account already exists with that email. Sign in with your password.';
       default:
         return e.message ?? 'Something went wrong. Please try again.';
     }

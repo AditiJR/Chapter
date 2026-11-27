@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,6 +8,8 @@ import 'package:go_router/go_router.dart';
 import '../../blocs/authentication/authentication_bloc.dart';
 import '../../blocs/library/library_cubit.dart';
 import '../../model/book.dart';
+import '../../model/social.dart';
+import '../../repositories/social/social_repository.dart';
 import '../../navigation/book_navigation.dart';
 import '../../navigation/my_navigator_route.dart';
 import '../../theme/theme.dart';
@@ -27,23 +31,54 @@ class LibraryHomePage extends StatefulWidget {
 }
 
 class _LibraryHomePageState extends State<LibraryHomePage> {
-  /// The demo push notification is shown once per app session.
-  static bool _bannerShown = false;
+  StreamSubscription<List<AppNotification>>? _sub;
+  final _seen = <String>{};
+  bool _first = true;
+  int _unread = 0;
 
   @override
   void initState() {
     super.initState();
-    if (_bannerShown) return;
-    _bannerShown = true;
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      showPushBanner(
-        context,
-        sender: 'Maya Chen',
-        message: 'Did you finish Piranesi yet?',
-        onTap: () => context.push('/chat/Maya%20Chen'),
-      );
-    });
+    final uid = context.read<AuthenticationBloc>().user?.uid;
+    if (uid == null) return;
+    // Show a banner when a new notification arrives while the app is open.
+    _sub = context
+        .read<SocialRepository>()
+        .watchNotifications(uid)
+        .listen((items) {
+          final fresh = <AppNotification>[];
+          for (final n in items) {
+            if (n.createdAt == null) continue;
+            final key = '${n.id}@${n.createdAt!.millisecondsSinceEpoch}';
+            if (_seen.add(key) && !_first && !n.read) fresh.add(n);
+          }
+          _first = false;
+          if (mounted) {
+            setState(() => _unread = items.where((n) => !n.read).length);
+          }
+          if (fresh.isNotEmpty && mounted) {
+            final n = fresh.first;
+            showPushBanner(
+              context,
+              sender: n.fromName,
+              message: n.type == NotificationType.follow
+                  ? 'started following you'
+                  : n.body,
+              onTap: () => n.type == NotificationType.message
+                  ? context.push(
+                      '/chat/${Uri.encodeComponent(n.fromUid)}',
+                      extra: n.fromName,
+                    )
+                  : context.push('/friend/${n.fromUid}'),
+            );
+          }
+        }, onError: (_) {});
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
   }
 
   @override
@@ -101,10 +136,14 @@ class _LibraryHomePageState extends State<LibraryHomePage> {
                         ],
                       ),
                     ),
-                    CircleIconButton(
-                      icon: 'assets/icons/bell.svg',
-                      onTap: () =>
-                          context.push(MyNavigatorRoute.notifications.path),
+                    Badge(
+                      isLabelVisible: _unread > 0,
+                      label: Text('$_unread'),
+                      child: CircleIconButton(
+                        icon: 'assets/icons/bell.svg',
+                        onTap: () =>
+                            context.push(MyNavigatorRoute.notifications.path),
+                      ),
                     ),
                   ],
                 ),
